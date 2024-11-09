@@ -1,110 +1,4 @@
-// import React, { useState, useEffect } from 'react';
-// import { useLocation } from 'react-router-dom'; 
-// import {
-//   Box,
-//   TextField,
-//   Button,
-//   Typography,
-//   Snackbar,
-//   Grid,
-//   MenuItem,
-//   Slider,
-// } from '@mui/material';
-// import { useUpdateParcelMutation } from '../../features/parcel/parcelApiSlice';
 
-// const UpdateParcelForm = ({ parcelToUpdate, onParcelUpdated }) => {
-//   const location = useLocation();
-//   const queryParams = new URLSearchParams(location.search);
-//   const trackingNumber = queryParams.get('trackingNumber'); // Get trackingNumber from URL params
-
-//   const [parcelData, setParcelData] = useState({
-//     currentLocation: '',
-//     destinationLatitude: '',
-//     destinationLongitude: '',
-//     progressStatus: 0,
-//     status: '',
-//     deliveryDate: '',
-//   });
-
-//   const [formError, setFormError] = useState({});
-//   const [successMessage, setSuccessMessage] = useState(false);
-//   const [loading, setLoading] = useState(false);
-
-//   const [updateParcel] = useUpdateParcelMutation();
-
-//   // Populate form fields with existing data when component mounts
-//   useEffect(() => {
-//     if (parcelToUpdate) {
-//       setParcelData(parcelToUpdate);
-//     }
-//   }, [parcelToUpdate]);
-
-
-//   const handleChange = (e) => {
-//     const { name, value } = e.target;
-//     setParcelData((prevData) => ({
-//       ...prevData,
-//       [name]: value,
-//     }));
-//   };
-
-//   const handleSliderChange = (event, newValue) => {
-//     setParcelData((prevData) => ({
-//       ...prevData,
-//       progressStatus: newValue,
-//     }));
-//   };
-
-//   const formValidation = (data) => {
-//     const errors = {};
-//     if (!data.currentLocation) errors.currentLocation = 'Current location is required';
-//     if (!data.destinationLatitude) errors.destinationLatitude = 'Destination Latitude is required';
-//     if (!data.destinationLongitude) errors.destinationLongitude = 'Destination Longitude is required';
-//     if (!data.status) errors.status = 'Status is required'; 
-//     return errors;
-//   };
-
-//   const handleParcelSubmit = async (e) => {
-//     e.preventDefault();
-
-//     const errors = formValidation(parcelData);
-//     if (Object.keys(errors).length > 0) {
-//       setFormError(errors);
-//       return;
-//     }
-
-//     setFormError({});
-//     setLoading(true);
-
-//     try {
-//       if (parcelToUpdate) {
-//         console.log("Tracking Number:", trackingNumber); // Check tracking number
-//         console.log("Updating parcel with data:", {
-//           trackingNumber,
-//           data: parcelData,
-//         });
-
-//         const response = await updateParcel({
-//           trackingNumber,
-//           data: parcelData,
-//         }).unwrap();
-        
-//         console.log("Updated parcel data:", response); // Log response
-
-//         // Trigger callback if provided
-//         if (onParcelUpdated) onParcelUpdated();
-//       }
-
-//       setSuccessMessage(true);
-//       setParcelData({}); // Reset form data
-//     } catch (error) {
-//       console.error("Error updating parcel:", error);
-//       console.error("Error details:", error.data); // Log the error data
-//       setFormError({ apiError: error?.data?.message || 'An error occurred' });
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom'; 
 import {
@@ -183,13 +77,13 @@ const UpdateParcelForm = ({ parcelToUpdate, onParcelUpdated }) => {
     setLoading(true);
 
     try {
-      console.log("Tracking Number:", trackingNumber); // Debug: Check tracking number
+    
       const response = await updateParcel({
         trackingNumber,
         data: parcelData,
       }).unwrap();
       
-      console.log("Updated parcel data:", response); // Debug: Log the response
+    
 
       // Trigger callback if provided
       if (onParcelUpdated) onParcelUpdated();
@@ -197,7 +91,7 @@ const UpdateParcelForm = ({ parcelToUpdate, onParcelUpdated }) => {
       setSuccessMessage(true); // Show success message
       setParcelData({}); // Reset form data after success
     } catch (error) {
-      console.error("Error updating parcel:", error);
+  
       setFormError({ apiError: error?.data?.message || 'An error occurred' });
     } finally {
       setLoading(false);
