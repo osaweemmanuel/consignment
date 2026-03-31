@@ -89,8 +89,8 @@ const login = asyncHandler(async (req, res) => {
   // Set cookie with token (optional but recommended for security)
   res.cookie('token', token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    secure: true, // Required for sameSite: 'none'
+    sameSite: 'none', // Required for cross-domain (DO -> cPanel)
     maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
   });
 
@@ -100,7 +100,7 @@ const login = asyncHandler(async (req, res) => {
   res.status(200).json({
     status: 'success',
     message: 'Login successful',
-    user,
+    userInfo: user, // Match frontend expectation
     token
   });
 });
@@ -140,8 +140,8 @@ const logout = asyncHandler(async (req, res) => {
   res.cookie('token', '', {
     httpOnly: true,
     expires: new Date(0),
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    secure: true, 
+    sameSite: 'none',
   });
 
   res.status(200).json({
