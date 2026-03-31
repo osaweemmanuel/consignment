@@ -90,9 +90,10 @@ const jwt=require('jsonwebtoken')
       req.user = decoded; 
       next();
     } catch (error) {
+      console.log('JWT Verification Error:', error.message);
       res.status(401).json({
         success: false,
-        message: 'Invalid token, authorization denied',
+        message: `Authentication failed: ${error.message}`,
       });
     }
   };
