@@ -1,49 +1,16 @@
-const { body, validationResult } = require('express-validator');
+// Utility functions to validate the inputs
 
-const validate = (validations) => {
-    return async (req, res, next) => {
-        try {
-            // Run all validations
-            for (const validation of validations) {
-                await validation.run(req);
-            }
+// Email Validation
+const validateEmail = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
 
-            // Collect validation errors
-            const errors = validationResult(req);
+// Password Validation
+const validatePassword = (password) => {
+    // Example criteria: minimum 8 characters, at least 1 uppercase, 1 lowercase, 1 number, and 1 special character
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    return regex.test(password);
+  };
 
-            if (errors.isEmpty()) {
-                return next(); // Proceed if no errors
-            }
-
-            // Send error response
-            return res.status(400).json({ errors: errors.array() });
-        } catch (error) {
-            // Handle any errors that occur during validation
-            console.error('Validation Error:', error);
-            return res.status(500).json({ message: 'Internal server error' });
-        }
-    };
-};
-
-const signupValidation = () => {
-    return [
-        body('firstname').notEmpty().withMessage("Firstname is required"),
-        body('lastname').notEmpty().withMessage("Lastname is required"),
-        body('gender').notEmpty().withMessage("Gender is required"),
-        body('email').isEmail().withMessage("Enter a valid email"),
-        body('password')
-            .isLength({ min: 6 }) // Ensure password has at least 6 characters
-            .withMessage("Password must be at least 6 characters"),
-    ];
-};
-
-const loginValidation = () => {
-    return [
-        body('email').isEmail().withMessage("Enter a valid email"),
-        body('password')
-            .isLength({ min: 6 }) // Ensure password has at least 6 characters
-            .withMessage("Password must be at least 6 characters"),
-    ];
-};
-
-module.exports = { validate, signupValidation, loginValidation };
+module.exports = { validateEmail, validatePassword };

@@ -1,16 +1,28 @@
 const express = require('express');
-const router = express.Router();  // Correctly create the router instance
-const { register,login,logout, findUserById, changeUserPassword,refreshAccessToken} = require('./../controllers/usersController');  // Ensure correct destructuring of `register`
-const {validate,signupValidation, loginValidation}=require("./../validation/userValidation");
-const authenticateUser=require("./../Middleware/authMiddleware");
+const router = express.Router(); 
 
-// Define the route and attach the register controller
-router.post('/register',validate(signupValidation()), register);
-router.post('/login',validate(loginValidation()),login);
-router.get('/getUser/:userId', authenticateUser,findUserById);
-router.post("/logout",authenticateUser,logout);
-router.post('/change-password',authenticateUser,changeUserPassword);
-router.post('/refresh-token',refreshAccessToken);
+// Import controllers and middlewares
+const { 
+    register, 
+    login, 
+    logout, 
+    findUserById, 
+    changeUserPassword, 
+  
+} = require('../controllers/usersController');
+
+const authenticateUser = require('../Middleware/authMiddleware');
+
+// Routes for user authentication
+router.post("/register", register);           // Registration
+router.post("/login", login);                 // Login
+router.post("/logout", authenticateUser, logout); // Logout
+
+// Route to get user details (requires authentication)
+router.get('/user/:userId', authenticateUser, findUserById);
+
+// Route for changing password
+router.post("/change-password", authenticateUser, changeUserPassword);
 
 
 

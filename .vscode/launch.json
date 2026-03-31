@@ -10,6 +10,13 @@
             "name": "backend",
             "command": "nodemon server.js",
             "cwd": "${workspaceFolder}\\backend"
-        }
+        },
+        {
+            "type": "node-terminal",
+            "request": "launch",
+            "name": "frontend",
+            "command": "npm run dev",
+            "cwd": "${workspaceFolder}\\frontend"
+        },
     ]
 }

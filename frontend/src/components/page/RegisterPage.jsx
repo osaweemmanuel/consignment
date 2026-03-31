@@ -1,256 +1,29 @@
-// import { Typography, Box, Grid, TextField, Button, InputAdornment, MenuItem, FormControl, Select, InputLabel, Snackbar, Alert } from "@mui/material";
-// import { useState } from 'react';
-// import { useNavigate } from "react-router-dom";
-// import { useRegisterMutation } from "../../features/auth/userApiSlice";
-// import PersonIcon from '@mui/icons-material/Person';
-// import EmailIcon from '@mui/icons-material/Email';
-// import IconButton from '@mui/material/IconButton';
-// import Visibility from '@mui/icons-material/Visibility';
-// import VisibilityOff from '@mui/icons-material/VisibilityOff';
-
-// const RegisterPage = () => {
-//     const [firstname, setFirstname] = useState("");
-//     const [lastname, setLastname] = useState("");
-//     const [gender, setGender] = useState("");
-//     const [email, setEmail] = useState("");
-//     const [password, setPassword] = useState("");
-//     const [confirmPassword, setConfirmPassword] = useState("");
-//     const [showPassword, setShowPassword] = useState(false);
-
-//     const [emailError, setEmailError] = useState("");
-//     const [passwordError, setPasswordError] = useState("");
-//     const [confirmPasswordError, setConfirmPasswordError] = useState("");
-
-//     const [errorMessage, setErrorMessage] = useState(""); // For general errors
-//     const [successMessage, setSuccessMessage] = useState(""); // For success message
-
-//     const [openSnackbar, setOpenSnackbar] = useState(false); // To control Snackbar visibility
-
-//     const navigate = useNavigate();
-  
-
-//     const [register, { isLoading }] = useRegisterMutation();
-
-//     const handleSubmit = async (e) => {
-//         e.preventDefault();
-//         setEmailError("");
-//         setPasswordError("");
-//         setConfirmPasswordError("");
-//         setErrorMessage("");
-//         setSuccessMessage("");
-
-//         // Basic form validation
-//         if (!firstname || !lastname || !gender || !email || !password || !confirmPassword) {
-//             setErrorMessage("All fields are required!");
-//             setOpenSnackbar(true);
-//             return;
-//         }
-//         if (password !== confirmPassword) {
-//             setConfirmPasswordError("Passwords do not match!");
-//             return;
-//         }
-
-//         try {
-//             const resp = await register({ firstname, lastname, gender, email, password }).unwrap();
-//             setSuccessMessage("Registration successful! Redirecting to login page...");
-//             setOpenSnackbar(true);
-
-//             // Clear form after successful registration
-//             setFirstname("");
-//             setLastname("");
-//             setGender("");
-//             setEmail("");
-//             setPassword("");
-//             setConfirmPassword("");
-
-//             setTimeout(() => {
-//                 navigate("/login");
-//             }, 3000); // Navigate to login after 3 seconds
-//         } catch (err) {
-//             const message = err?.data?.message || err.error;
-//             if (message.includes("email")) setEmailError("Invalid email");
-//             if (message.includes("password")) setPasswordError("Invalid password");
-
-//             setErrorMessage(message || "Registration failed!");
-//             setOpenSnackbar(true);
-//         }
-//     };
-
-//     const handleShowPassword = () => setShowPassword((prev) => !prev);
-//     const handleCloseSnackbar = () => setOpenSnackbar(false); // Close Snackbar on timeout or manually
-
-//     return (
-//         <Grid container spacing={2} sx={{ height: '100vh', backgroundColor: 'rgb(249, 23, 81)' }}>
-//             <Grid item xs={12} md={12} lg={12} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-//                 <Box
-//                     component="form"
-//                     onSubmit={handleSubmit}
-//                     sx={{
-//                         width: '100%',
-//                         maxWidth: 400,
-//                         backgroundColor: 'white',
-//                         padding: 4,
-//                         borderRadius: 2,
-//                         boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-//                     }}
-//                 >
-//                     <Typography variant="h4" sx={{ textAlign: 'center', color: 'rgb(249, 23, 81)' }}>
-//                         Register
-//                     </Typography>
-
-//                     {/* First Name */}
-//                     <TextField
-//                         fullWidth
-//                         label="First Name"
-//                         value={firstname}
-//                         onChange={(e) => setFirstname(e.target.value)}
-//                         margin="normal"
-//                         InputProps={{
-//                             endAdornment: (
-//                                 <InputAdornment position="end">
-//                                     <PersonIcon />
-//                                 </InputAdornment>
-//                             ),
-//                         }}
-//                     />
-
-//                     {/* Last Name */}
-//                     <TextField
-//                         fullWidth
-//                         label="Last Name"
-//                         value={lastname}
-//                         onChange={(e) => setLastname(e.target.value)}
-//                         margin="normal"
-//                         InputProps={{
-//                             endAdornment: (
-//                                 <InputAdornment position="end">
-//                                     <PersonIcon />
-//                                 </InputAdornment>
-//                             ),
-//                         }}
-//                     />
-
-//                     {/* Email */}
-//                     <TextField
-//                         fullWidth
-//                         type="email"
-//                         label="Email"
-//                         error={!!emailError}
-//                         helperText={emailError}
-//                         value={email}
-//                         onChange={(e) => setEmail(e.target.value)}
-//                         margin="normal"
-//                         InputProps={{
-//                             endAdornment: (
-//                                 <InputAdornment position="end">
-//                                     <EmailIcon />
-//                                 </InputAdornment>
-//                             ),
-//                         }}
-//                     />
-
-//                     {/* Gender */}
-//                     <FormControl fullWidth margin="normal">
-//                         <InputLabel>Gender</InputLabel>
-//                         <Select
-//                             value={gender}
-//                             onChange={(e) => setGender(e.target.value)}
-//                             label="Gender"
-//                         >
-//                             <MenuItem value=""><em>Select Gender</em></MenuItem>
-//                             <MenuItem value="male">Male</MenuItem>
-//                             <MenuItem value="female">Female</MenuItem>
-//                             <MenuItem value="others">Others</MenuItem>
-//                         </Select>
-//                     </FormControl>
-
-//                     {/* Password */}
-//                     <TextField
-//                         fullWidth
-//                         name="password"
-//                         label="Password"
-//                         error={!!passwordError}
-//                         helperText={passwordError}
-//                         value={password}
-//                         onChange={(e) => setPassword(e.target.value)}
-//                         type={showPassword ? 'text' : 'password'}
-//                         margin="normal"
-//                         InputProps={{
-//                             endAdornment: (
-//                                 <InputAdornment position="end">
-//                                     <IconButton aria-label="toggle password visibility" onClick={handleShowPassword}>
-//                                         {showPassword ? <VisibilityOff /> : <Visibility />}
-//                                     </IconButton>
-//                                 </InputAdornment>
-//                             ),
-//                         }}
-//                     />
-
-//                     {/* Confirm Password */}
-//                     <TextField
-//                         fullWidth
-//                         name="confirmPassword"
-//                         label="Confirm Password"
-//                         error={!!confirmPasswordError}
-//                         helperText={confirmPasswordError}
-//                         value={confirmPassword}
-//                         onChange={(e) => setConfirmPassword(e.target.value)}
-//                         type="password"
-//                         margin="normal"
-//                     />
-
-//                     {/* Submit Button */}
-//                     <Button
-//                         variant="contained"
-//                         fullWidth
-//                         type="submit"
-//                         sx={{
-//                             mt: 3,
-//                             backgroundColor: 'rgb(249, 23, 81)',
-//                             '&:hover': {
-//                                 backgroundColor: 'rgb(200, 19, 65)',
-//                             },
-//                             color: 'white',
-//                         }}
-//                         disabled={isLoading}
-//                     >
-//                         {isLoading ? 'Registering...' : 'Register'}
-//                     </Button>
-
-//                     {/* Snackbar for Error/Success Messages */}
-//                     <Snackbar
-//                         open={openSnackbar}
-//                         autoHideDuration={3000}
-//                         onClose={handleCloseSnackbar}
-//                         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-//                     >
-//                         <Alert onClose={handleCloseSnackbar} severity={successMessage ? "success" : "error"}>
-//                             {successMessage || errorMessage}
-//                         </Alert>
-//                     </Snackbar>
-//                 </Box>
-//             </Grid>
-//         </Grid>
-//     );
-// };
-
-// export default RegisterPage;
-
-
-
-import { useState } from "react";
-import { Box, Button, FormControl, InputAdornment, InputLabel, MenuItem, Select, TextField, Typography,Snackbar,Alert } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import EmailIcon from '@mui/icons-material/Email';
-import IconButton from '@mui/material/IconButton';
-import PersonIcon from '@mui/icons-material/Person';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import React, { useState } from 'react';
+import { 
+  UserPlus, 
+  Mail, 
+  Lock, 
+  User, 
+  ArrowRight,
+  ShieldCheck,
+  CheckCircle,
+  AlertCircle,
+  Loader2,
+  Users,
+  Briefcase,
+  Terminal,
+  Activity,
+  Globe,
+  Database,
+  ArrowLeft,
+  Shield
+} from 'lucide-react';
+import { useNavigate, Link } from "react-router-dom";
 import { useRegisterMutation } from "../../features/auth/userApiSlice";
-
+import Logo from '../Logo';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const RegisterPage = () => {
-    const [showPassword, setShowPassword] = useState(false);
     const [firstname, setFirstname] = useState('');
     const [lastname, setLastname] = useState('');
     const [gender, setGender] = useState('');
@@ -258,218 +31,246 @@ const RegisterPage = () => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
-    const [firstnameError,setFirstnameError]=useState("");
-    const [lastnameError,setLastnameError]=useState("");
-    const [emailError,setEmailError]=useState("");
-    const [passwordError,setPasswordError]=useState("");
-    const [confirmPasswordError,setConfirmPasswordError]=useState("");
-
-   const [errorMessage,setErrorMessage]=useState(""); //general error
-   const [successMessage,setSuccessMessage]=useState("");
-
-   const [openSnackbar,setOpenSnackbar]=useState(false); //to control visibility
+    const [errorMessage, setErrorMessage] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
 
     const [register, { isLoading }] = useRegisterMutation();
-    const navigate=useNavigate();
+    const navigate = useNavigate();
 
-    const handleSubmit=async(e)=>{
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setFirstnameError("");
-        setLastnameError("");
-        setEmailError("");
-        setPasswordError("");
-        setConfirmPasswordError("");
         setErrorMessage("");
         setSuccessMessage("");
 
-          // Basic form validation
-          if (!firstname || !lastname || !gender || !email || !password || !confirmPassword) {
-            setErrorMessage("All fields are required!");
-            setOpenSnackbar(true);
+        if (!firstname || !lastname || !gender || !email || !password || !confirmPassword) {
+            setErrorMessage("All operational fields are required.");
             return;
-          }
+        }
+        if (password !== confirmPassword) {
+            setErrorMessage("Security key synchronization failed—Keys do not match.");
+            return;
+        }
 
-          if(password !== confirmPassword){
-             setConfirmPassword("Password does not match");
-             return;
-          }
-
-          try{
-                await register({firstname,lastname,gender,email,password}).unwrap();
-                setSuccessMessage("Successfully registered...");
-                setOpenSnackbar(true);
-
-                //clear all register successful form
-                setFirstname("");
-                setLastname("");
-                setGender("");
-                setEmail("");
-                setPassword("");
-                setConfirmPassword("");
-
-                setTimeout(()=>{
-                    navigate("/login");
-                },2000)
-          }catch(err){
-            const message=err?.data?.message || err.error;
-            if(message.includes("email")) setEmailError("Invalid Email");
-            if(message.includes("password")) setPassword("Invalid Password");
-
-            setErrorMessage(message || "Registration failed!");
-            setOpenSnackbar(true);
-
-          }
-    
+        try {
+            await register({ firstname, lastname, gender, email, password }).unwrap();
+            setSuccessMessage("Operational credentials provisioned successfully.");
+            setTimeout(() => navigate("/login"), 2000);
+        } catch (err) {
+            setErrorMessage(err?.data?.message || "Credential provisioning failed.");
+        }
     }
- 
-
-
-    const handleShowPassword = () => setShowPassword((prev) => !prev);
-    const handleCloseSnackbar=()=> setOpenSnackbar((prev)=>!prev);
 
     return (
-        <Box
-            sx={{
-                pt: 8,
-                mt: 12,
-                maxWidth: '600px',
-                width: '90%',
-                margin: 'auto',
-                padding: 4,
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                borderRadius: 4,
-                boxShadow: 3,
-                backdropFilter: 'blur(5px)',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center'
-            }}
-        >
-            <Typography variant="h4" sx={{ mt: 8, color: 'skyblue' }} gutterBottom>
-                Registration Form
-            </Typography>
-
-
-
-                     {/* Snackbar for Error/Success Messages */}
-                     <Snackbar
-                        open={openSnackbar}
-                        autoHideDuration={3000}
-                        onClose={handleCloseSnackbar}
-                        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-                    >
-                        <Alert onClose={handleCloseSnackbar} severity={successMessage ? "success" : "error"}>
-                            {successMessage || errorMessage}
-                        </Alert>
-                    </Snackbar>
-
-
-
-            <TextField
-                type="text"
-                label="First Name"
-                value={firstname}
-                onChange={(e) => setFirstname(e.target.value)}
-                error={!!firstnameError}
-                helperText={firstnameError}
-                fullWidth
-                sx={{ mb: 2 }}
-                InputProps={{
-                    endAdornment: (
-                        <InputAdornment position="end">
-                            <PersonIcon />
-                        </InputAdornment>
-                    ),
-                }}
-            />
-
-            <TextField
-                type="text"
-                label="Last Name"
-                value={lastname}
-                error={!!lastnameError}
-                helperText={lastnameError}
-                onChange={(e) => setLastname(e.target.value)}
-                fullWidth
-                sx={{ mb: 2 }}
-                InputProps={{
-                    endAdornment: (
-                        <InputAdornment position="end">
-                            <PersonIcon />
-                        </InputAdornment>
-                    ),
-                }}
-            />
-
-            <TextField
-                type="email"
-                label="Email"
-                value={email}
-                error={!!emailError}
-                helperText={emailError}
-                onChange={(e) => setEmail(e.target.value)}
-                fullWidth
-                sx={{ mb: 2 }}
-                InputProps={{
-                    endAdornment: (
-                        <InputAdornment position="end">
-                            <EmailIcon />
-                        </InputAdornment>
-                    ),
-                }}
-            />
-
-            <FormControl fullWidth sx={{ mb: 2 }}>
-                <InputLabel>Gender</InputLabel>
-                <Select
-                    value={gender}
-                    onChange={(e) => setGender(e.target.value)}
-                    label="Gender"
+        <div className="min-h-screen bg-white flex flex-col lg:flex-row font-sans selection:bg-primary-main selection:text-white">
+            {/* Visual Command Side (Institutional Identity) */}
+            <div className="hidden lg:flex lg:w-5/12 bg-primary-main relative flex-col justify-center p-20 overflow-hidden border-r border-white/10">
+                {/* High-End Background Effects */}
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20 pointer-events-none" />
+                <div className="absolute top-0 right-0 w-[700px] h-[700px] bg-white/5 rounded-full blur-[130px] pointer-events-none" />
+                <div className="absolute -bottom-40 -left-20 w-[500px] h-[500px] bg-accent-main/10 rounded-full blur-[130px] pointer-events-none" />
+                
+                <motion.div 
+                    initial={{ opacity: 0, x: -30 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
+                    className="relative z-10"
                 >
-                    <MenuItem value=""><em>Select Gender</em></MenuItem>
-                    <MenuItem value="male">Male</MenuItem>
-                    <MenuItem value="female">Female</MenuItem>
-                    <MenuItem value="others">Others</MenuItem>
-                </Select>
-            </FormControl>
+                    <Link to="/" className="inline-block hover:scale-110 transition-transform duration-500 mb-12">
+                        <Logo size="lg" textClass="text-white font-black" iconColor="#ffffff" accentColor="#FF6600" />
+                    </Link>
+                    <h1 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter leading-none mb-8 italic drop-shadow-2xl">
+                        Agent<br/>Provisioning<br/><span className="text-accent-main">Protocol.</span>
+                    </h1>
+                    <p className="text-base text-white/70 font-bold leading-relaxed max-w-sm mb-12 uppercase tracking-tight italic">
+                        Initialize your secure agent identity within the Tunshpresh Global operational network. 
+                    </p>
+                    
+                    <div className="space-y-6">
+                        {[
+                          { text: "Operational Ledger Access", icon: <Database size={13} /> },
+                          { text: "Cross-Border Command", icon: <Globe size={13} /> },
+                          { text: "Encrypted Transaction Logs", icon: <Terminal size={13} /> }
+                        ].map((item, i) => (
+                          <div key={i} className="flex items-center gap-5 group">
+                             <div className="w-9 h-9 bg-white/5 rounded-xl flex items-center justify-center text-accent-main border border-white/10 group-hover:bg-accent-main group-hover:text-white transition-all transform group-hover:rotate-6">
+                                {item.icon}
+                             </div>
+                             <span className="text-[9px] font-black text-white/50 uppercase tracking-[0.3em] group-hover:text-white transition-colors">{item.text}</span>
+                          </div>
+                        ))}
+                    </div>
+                </motion.div>
 
-            <TextField
-                type={showPassword ? 'text' : 'password'}
-                label="Password"
-                value={password}
-                error={!!passwordError}
-                helperText={passwordError}
-                onChange={(e) => setPassword(e.target.value)}
-                fullWidth
-                sx={{ mb: 2 }}
-                InputProps={{
-                    endAdornment: (
-                        <InputAdornment position="end">
-                            <IconButton aria-label="toggle password visibility" onClick={handleShowPassword}>
-                                {showPassword ? <VisibilityOff /> : <Visibility />}
-                            </IconButton>
-                        </InputAdornment>
-                    ),
-                }}
-            />
+                {/* Industrial Base Metadata */}
+                <div className="absolute bottom-10 left-10 right-10 flex justify-between items-center text-white/10 font-black text-[8px] tracking-[0.6em] uppercase italic">
+                    <span className="flex items-center gap-3"><Activity size={10} /> ONBOARDING NODE 04</span>
+                    <span>RESTRICTED ACCESS ONLY</span>
+                </div>
+            </div>
 
-            <TextField
-                type="password"
-                label="Confirm Password"
-                value={confirmPassword}
-                error={!!confirmPasswordError}
-                helperText={confirmPasswordError}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                fullWidth
-                sx={{ mb: 2 }}
-            />
+            {/* Registration Form Terminal */}
+            <div className="w-full lg:w-7/12 flex items-center justify-center p-6 bg-white relative overflow-y-auto">
+                <Link to="/" className="absolute top-8 left-8 flex items-center gap-2.5 text-slate-400 hover:text-primary-main transition-all font-black text-[9px] uppercase tracking-[0.3em] group bg-white p-3 rounded-xl border border-slate-100 shadow-sm hover:shadow-lg z-20">
+                    <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1.5 transition-transform" /> TERMINAL EXIT
+                </Link>
 
-    
+                <motion.div 
+                    initial={{ opacity: 0, scale: 0.98 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="max-w-2xl w-full py-20 lg:py-0"
+                >
+                  <div className="bg-white p-8 lg:p-0 rounded-[2.5rem] lg:rounded-none shadow-xl lg:shadow-none border border-slate-100 lg:border-0 relative">
+                     <div className="text-center mb-12">
+                        <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-main text-white rounded-[1.5rem] mb-6 shadow-2xl group overflow-hidden">
+                             <div className="absolute inset-0 bg-accent-main opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                            <UserPlus className="w-7 h-7 relative z-10 group-hover:scale-110 transition-transform duration-500" />
+                        </div>
+                        <h2 className="text-3xl font-black text-primary-main uppercase tracking-tighter italic mb-3">Agent Registration</h2>
+                        <p className="text-slate-400 text-[9px] uppercase tracking-[0.3em] font-black">Create your secure agent identity within the network.</p>
+                     </div>
 
-            <Button variant="contained" onClick={handleSubmit} fullWidth disabled={isLoading}>
-                {isLoading ? "Registering..." : "Register"}
-            </Button>
-        </Box>
+                     <AnimatePresence>
+                        {(successMessage || errorMessage) && (
+                            <motion.div 
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                exit={{ opacity: 0, height: 0 }}
+                                className={`mb-8 p-5 rounded-2xl flex items-center gap-5 border shadow-sm ${
+                                    successMessage ? 'bg-emerald-50 border-emerald-100 text-emerald-700' : 'bg-red-50 border-red-100 text-red-700'
+                                }`}
+                            >
+                                <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${successMessage ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'}`}>
+                                    {successMessage ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
+                                </div>
+                                <p className="font-black text-[9px] uppercase tracking-widest leading-relaxed">{successMessage || errorMessage}</p>
+                            </motion.div>
+                        )}
+                     </AnimatePresence>
+
+                     <form onSubmit={handleSubmit} className="space-y-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                           <div className="space-y-2.5">
+                              <label className="text-[8px] font-black uppercase tracking-[0.4em] text-slate-400 ml-4 italic">First Name</label>
+                              <div className="relative group">
+                                <div className="absolute left-5 top-1/2 -translate-y-1/2 w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center text-slate-300 group-focus-within:bg-primary-main group-focus-within:text-white transition-all duration-500">
+                                    <User size={16} />
+                                </div>
+                                <input 
+                                  type="text" 
+                                  value={firstname}
+                                  onChange={(e) => setFirstname(e.target.value)}
+                                  placeholder="IDENTIFIER"
+                                  className="w-full h-14 bg-blue-50 border border-slate-100 focus:border-primary-main focus:bg-white rounded-2xl pl-16 pr-6 font-black text-slate-950 text-xs uppercase tracking-[0.05em] outline-none transition-all placeholder:text-slate-300 placeholder:italic"
+                                  required
+                                />
+                              </div>
+                           </div>
+                           <div className="space-y-2.5">
+                              <label className="text-[8px] font-black uppercase tracking-[0.4em] text-slate-400 ml-4 italic">Last Name</label>
+                              <div className="relative group">
+                                <div className="absolute left-5 top-1/2 -translate-y-1/2 w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center text-slate-300 group-focus-within:bg-primary-main group-focus-within:text-white transition-all duration-500">
+                                    <Users size={16} />
+                                </div>
+                                <input 
+                                  type="text" 
+                                  value={lastname}
+                                  onChange={(e) => setLastname(e.target.value)}
+                                  placeholder="METADATA"
+                                  className="w-full h-14 bg-blue-50 border border-slate-100 focus:border-primary-main focus:bg-white rounded-2xl pl-16 pr-6 font-black text-slate-950 text-xs uppercase tracking-[0.05em] outline-none transition-all placeholder:text-slate-300 placeholder:italic"
+                                  required
+                                />
+                              </div>
+                           </div>
+                        </div>
+
+                        <div className="space-y-2.5">
+                            <label className="text-[8px] font-black uppercase tracking-[0.4em] text-slate-400 ml-4 italic">Email Address</label>
+                            <div className="relative group">
+                                <div className="absolute left-5 top-1/2 -translate-y-1/2 w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center text-slate-300 group-focus-within:bg-primary-main group-focus-within:text-white transition-all duration-500">
+                                    <Mail size={16} />
+                                </div>
+                                <input 
+                                  type="email" 
+                                  value={email}
+                                  onChange={(e) => setEmail(e.target.value)}
+                                  placeholder="AGENT@TUNSHPRESH.CORP"
+                                  className="w-full h-14 bg-blue-50 border border-slate-100 focus:border-primary-main focus:bg-white rounded-2xl pl-16 pr-6 font-black text-slate-950 text-xs uppercase tracking-[0.05em] outline-none transition-all placeholder:text-slate-300 placeholder:italic"
+                                  required
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-2.5">
+                           <label className="text-[8px] font-black uppercase tracking-[0.4em] text-slate-400 ml-4 italic">Gender Selection</label>
+                           <div className="relative">
+                               <select 
+                                 value={gender} 
+                                 onChange={(e) => setGender(e.target.value)}
+                                 className="w-full h-14 bg-blue-50 border border-slate-100 focus:border-primary-main rounded-2xl px-6 font-black text-slate-950 text-xs uppercase tracking-[0.2em] outline-none transition-all appearance-none cursor-pointer"
+                                 required
+                               >
+                                  <option value="" disabled>SELECT GENDER</option>
+                                  <option value="male">MALE</option>
+                                  <option value="female">FEMALE</option>
+                               </select>
+                               <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                                  <ArrowRight size={14} className="rotate-90" />
+                                </div>
+                           </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                           <div className="space-y-2.5">
+                              <label className="text-[8px] font-black uppercase tracking-[0.4em] text-slate-400 ml-4 italic">Account Password</label>
+                              <input 
+                                type="password" 
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="••••••••"
+                                className="w-full h-14 bg-blue-50 border border-slate-100 focus:border-primary-main focus:bg-white rounded-2xl px-6 font-black text-slate-950 text-xs tracking-[0.3em] outline-none transition-all placeholder:text-slate-300"
+                                required
+                              />
+                           </div>
+                           <div className="space-y-2.5">
+                              <label className="text-[8px] font-black uppercase tracking-[0.4em] text-slate-400 ml-4 italic">Confirm Passkey</label>
+                              <input 
+                                type="password" 
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                placeholder="••••••••"
+                                className="w-full h-14 bg-blue-50 border border-slate-100 focus:border-primary-main focus:bg-white rounded-2xl px-6 font-black text-slate-950 text-xs tracking-[0.3em] outline-none transition-all placeholder:text-slate-300"
+                                required
+                              />
+                           </div>
+                        </div>
+
+                        {/* Security Notice Removed */}
+
+                        <button 
+                          type="submit" 
+                          disabled={isLoading}
+                          className="w-full h-16 bg-accent-main hover:bg-accent-hover text-white rounded-[1.25rem] font-black text-[10px] uppercase tracking-[0.3em] shadow-xl transition-all transform active:scale-95 flex items-center justify-center gap-4 group disabled:opacity-50 mt-8"
+                        >
+                          {isLoading ? (
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                          ) : (
+                            <>
+                              <span>Create Agent Identity</span>
+                              <CheckCircle size={18} className="transition-transform group-hover:scale-125" />
+                            </>
+                          )}
+                        </button>
+
+                        <div className="text-center pt-4">
+                           <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-loose">
+                                Already Provisioned? <Link to="/login" className="text-primary-main hover:text-primary-dark transition-colors underline decoration-2 underline-offset-8 ml-1.5">Login Terminal</Link>
+                           </p>
+                        </div>
+                     </form>
+                  </div>
+               </motion.div>
+            </div>
+        </div>
     );
 };
 

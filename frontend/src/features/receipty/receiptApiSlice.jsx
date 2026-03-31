@@ -1,3 +1,5 @@
+
+
 import { createApi } from '@reduxjs/toolkit/query/react';
 import baseQueryWithReauth from '../baseQueryWithReauth';
 
@@ -8,63 +10,63 @@ export const receiptApiSlice = createApi({
   baseQuery: baseQueryWithReauth, // Use the enhanced baseQuery
   tagTypes: ['Receipt'],
   endpoints: (builder) => ({
-    // Create receipt
     createReceipt: builder.mutation({
-      query: (receiptData) => {
-        const isFormData = receiptData instanceof FormData;
+      query: (data) => {
+        const isFormData = data instanceof FormData;
+
         return {
           url: `${RECEIPT_URL}/create`,
           method: 'POST',
-          body: isFormData ? receiptData : JSON.stringify(receiptData),
-          headers: isFormData ? {} : { 'Content-Type': 'application/json' },
+          body: isFormData ? data : JSON.stringify(data), // Ensure the data is properly sent
+          credentials: 'include', // 🔹 Fix: Ensure cookies are sent
+          headers: {
+            'Content-Type': isFormData ? 'multipart/form-data' : 'application/json',
+          },
         };
       },
       invalidatesTags: [{ type: 'Receipt', id: 'LIST' }],
     }),
 
-    // Update receipt
     updateReceipt: builder.mutation({
       query: ({ id, data }) => ({
         url: `${RECEIPT_URL}/${id}`,
         method: 'PUT',
-        body: data,
+        body: JSON.stringify(data),
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
       }),
       invalidatesTags: [{ type: 'Receipt', id: 'LIST' }],
     }),
 
-    // Delete receipt
     deleteReceipt: builder.mutation({
       query: (id) => ({
         url: `${RECEIPT_URL}/${id}`,
         method: 'DELETE',
+        credentials: 'include',
       }),
       invalidatesTags: [{ type: 'Receipt', id: 'LIST' }],
     }),
 
-    // Get all receipts
     getAllReceipts: builder.query({
       query: () => ({
-        url: RECEIPT_URL,
+        url: `${RECEIPT_URL}`,
         method: 'GET',
+        credentials: 'include',
       }),
       providesTags: [{ type: 'Receipt', id: 'LIST' }],
     }),
 
-    // Get receipt by ID
     getReceipt: builder.query({
       query: (id) => ({
         url: `${RECEIPT_URL}/${id}`,
         method: 'GET',
+        credentials: 'include',
       }),
-       //providesTags: (result, error, id) => [{ type: 'Receipt', id }],
-       invalidatesTags: [{ type: 'Receipt', id: 'LIST' }],
+      invalidatesTags: [{ type: 'Receipt', id: 'LIST' }],
     }),
-
-    
   }),
 });
 
-// Export hooks for usage in functional components
 export const {
   useCreateReceiptMutation,
   useUpdateReceiptMutation,

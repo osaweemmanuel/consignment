@@ -1,19 +1,17 @@
 import { Outlet } from 'react-router-dom';
-import { Box } from '@mui/material';
-import Footer from '../components/page/Footer.jsx';
 import Navbar from '../components/Navbar.jsx';
+import Footer from '../components/page/Footer.jsx';
 
 const MainLayout = () => {
-  return (
-    <>
-      <Navbar />
-      <Box sx={{ padding: '20px' }}>
-        
-        <Outlet />
-      </Box>
-      <Footer />
-    </>
-  );
+    return (
+        <div className="flex flex-col min-h-screen bg-white">
+            <Navbar />
+            <main className="flex-grow">
+                <Outlet />
+            </main>
+            <Footer />
+        </div>
+    );
 };
 
 export default MainLayout;

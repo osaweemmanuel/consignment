@@ -1,6 +1,6 @@
 const express=require('express');
 const router=express.Router();
-const {parcelCreation,getParcelDetail, updateParcelLocation, deleteParcel,getAllParcel}=require('./../controllers/parcelController');
+const {parcelCreation,getParcelDetail, updateParcelLocation, deleteParcel,getAllParcel, getActivityLogs}=require('./../controllers/parcelController');
 
 const multer=require('multer');
 const authenticateUser=require('../Middleware/authMiddleware');
@@ -36,15 +36,21 @@ const upload = multer({
 });
 
 
-router.
-post('/create', authenticateUser,upload.single('image'), parcelCreation);
-router.get('/:trackingNumber',getParcelDetail);
-router.get("/",authenticateUser,getAllParcel);
-router.put('/:trackingNumber',authenticateUser,updateParcelLocation);
+// router.route("/create")
+// .post( authenticateUser,upload.single('image'), parcelCreation)
+// .get( authenticateUser,upload.single('image'), parcelCreation);
+// router.get('/:trackingNumber',getParcelDetail);
+// router.get("/",authenticateUser,getAllParcel);
+// router.put('/:trackingNumber',authenticateUser,updateParcelLocation);
+// router.delete('/:trackingNumber',authenticateUser,deleteParcel);
+
+
+router.post("/create",authenticateUser,upload.array('image', 10), parcelCreation);
+router.get("/", authenticateUser,getAllParcel);
+router.get("/logs", authenticateUser, getActivityLogs);
+router.get("/:trackingNumber",getParcelDetail);
+router.put('/:trackingNumber',authenticateUser,upload.array('image', 10),updateParcelLocation);
 router.delete('/:trackingNumber',authenticateUser,deleteParcel);
-
-
-
 
 module.exports=router;
 

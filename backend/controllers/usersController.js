@@ -1,234 +1,200 @@
-const {createAccessToken,
-createRefreshToken,
-verifyRefreshToken}=require("../Middleware/jwtToken");
 const db = require("./../config/dbConnection");
 const bcrypt = require('bcryptjs');
-const jwt=require('jsonwebtoken');
+const createAccessToken = require("../Middleware/jwtToken");
+const { validateEmail, validatePassword } = require("../validation/userValidation");
+const asyncHandler = require("../utils/asyncHandler");
 
-const register = async (req, res) => {
-    console.log(req.body);
-    const { firstname, lastname, gender, email, password } = req.body;
-    try {
-        // Check if email already exists
-        db.query("SELECT * FROM users WHERE email = ?", [email], async (err, results) => {
-            if (err) {
-                return res.status(500).json({ message: 'Something went wrong while processing your request' });
-            }
+/**
+ * @desc    Register a new user
+ * @route   POST /api/v1/auth/register
+ * @access  Public
+ */
+const register = asyncHandler(async (req, res) => {
+  const { firstname, lastname, gender, email, password } = req.body;
 
-            if (results.length > 0) {
-                return res.status(400).json({ message: 'Email already exists' });
-            }
+  // Validate input fields
+  if (!firstname || !lastname || !gender || !email || !password) {
+    res.status(400);
+    throw new Error("All fields are required");
+  }
 
-            try {
-                // Generate salt and hash the password
-                const salt = await bcrypt.genSalt(10);
-                const hashedPassword = await bcrypt.hash(password, salt);
+  // Validate email and password format
+  if (!validateEmail(email)) {
+    res.status(400);
+    throw new Error('The email format is invalid');
+  }
+  if (!validatePassword(password)) {
+    res.status(400);
+    throw new Error("The password does not meet the criteria (min 8 chars, 1 uppercase, 1 special)");
+  }
 
-                // Insert new user into the database
-                db.query("INSERT INTO users (firstname, lastname, gender, email, password) VALUES (?, ?, ?, ?, ?)", 
-                [firstname, lastname, gender, email, hashedPassword], (err, results) => {
-                    if (err) {
-                        return res.status(500).json({ message: 'Something went wrong while processing your request' });
-                    }
-                    res.status(201).json({ message: 'Registered successfully', results });
-                });
-            } catch (err) {
-                console.error('Error hashing password:', err);
-                res.status(500).json({ message: 'Internal server error' });
-            }
-        });
-    } catch (err) {
-        console.error('Error in registration process:', err.message);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-};
+  // Check if email already exists
+  const [existingUsers] = await db.execute("SELECT * FROM users WHERE email = ?", [email]);
+  if (existingUsers.length > 0) {
+    res.status(400);
+    throw new Error('Email already exists');
+  }
 
-const refreshAccessToken = async (req, res) => {
-    try {
-        // Retrieve the refresh token from cookies
-        const refreshToken = req.cookies.refreshToken;
+  // Hash the password
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
 
-        // Check if the refresh token is provided
-        if (!refreshToken) {
-            return res.status(401).json({ message: 'Refresh token is required' });
-        }
+  // Insert new user
+  const insertQuery = `
+    INSERT INTO users (firstname, lastname, gender, email, password)
+    VALUES (?, ?, ?, ?, ?)
+  `;
+  const [insertResult] = await db.execute(insertQuery, [firstname, lastname, gender, email, hashedPassword]);
 
-        // Verify the refresh token
-        const decodedRefreshToken = verifyRefreshToken(refreshToken);
-        if (!decodedRefreshToken || !decodedRefreshToken.id) {
-            return res.status(403).json({ message: 'Invalid refresh token' });
-        }
+  res.status(201).json({
+    status: 'success',
+    message: 'Successfully registered',
+    userId: insertResult.insertId,
+  });
+});
 
-        // Create a new access token using the ID from the decoded refresh token
-        const newAccessToken = createAccessToken({ id: decodedRefreshToken.id }); // Ensure you use 'id'
-        
-        // Optionally, create a new refresh token if you want to rotate tokens
-        const newRefreshToken = createRefreshToken({ id: decodedRefreshToken.id }); // Ensure you use 'id'
+/**
+ * @desc    Login user
+ * @route   POST /api/v1/auth/login
+ * @access  Public
+ */
+const login = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
 
-        // Set the new refresh token in cookies
-        res.cookie('refreshToken', newRefreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-            sameSite: 'Strict', // Helps mitigate CSRF attacks
-            maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
-        });
+  if (!email || !password) {
+    res.status(400);
+    throw new Error("Email and password are required");
+  }
 
-        // Send the new access token to the client
-        return res.json({ accessToken: newAccessToken });
-    } catch (err) {
-        console.error('Error while refreshing token:', err.message);
-        // Handle cases where the refresh token is invalid or expired
-        return res.status(403).json({ message: 'Invalid or expired refresh token' });
-    }
-};
+  // Query the database for a user with the provided email
+  const [results] = await db.execute("SELECT * FROM users WHERE email = ?", [email]);
 
+  if (results.length === 0) {
+    res.status(401);
+    throw new Error('Invalid email or password');
+  }
 
+  const user = results[0];
 
+  // Compare the provided password with the hashed password in the database
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    res.status(401);
+    throw new Error('Invalid email or password');
+  }
 
-    
+  // Create an access token
+  const token = createAccessToken({ id: user.id, email: user.email });
 
-const login = async (req, res) => {
-    const { email, password } = req.body;
-    try {
-        db.query("SELECT * FROM users WHERE email = ?", [email], async (err, results) => {
-            if (err) {
-                return res.status(500).json({ message: 'Database query error' });
-            }
+  // Set cookie with token (optional but recommended for security)
+  res.cookie('token', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+  });
 
-            if (results.length === 0) {
-                return res.status(401).json({ message: 'Invalid email or password' });
-            }
+  // Remove password from user object before sending
+  delete user.password;
 
-            const user = results[0];
+  res.status(200).json({
+    status: 'success',
+    message: 'Login successful',
+    user,
+    token
+  });
+});
 
-            // Compare password
-            const isMatch = await bcrypt.compare(password, user.password);
-            if (!isMatch) {
-                return res.status(401).json({ message: 'Invalid email or password' });
-            }
+/**
+ * @desc    Get user by ID
+ * @route   GET /api/v1/auth/user/:userId
+ * @access  Private
+ */
+const findUserById = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
 
-            const token = createAccessToken({ id: user.id, email: user.email });
-            const refreshToken = createRefreshToken({ id: user.id, email: user.email });
-        
-            // Set the access token as an HttpOnly cookie
-            res.cookie('token', token, {
-                httpOnly: true,      // Prevent JavaScript access
-                secure: false,       // Set to true if using HTTPS
-                sameSite: 'Strict',  // Prevent CSRF
-                maxAge: 30 * 24  * 60 * 60 * 1000 // 15 minutes for access token
-            });
+  if (!userId) {
+    res.status(400);
+    throw new Error('User ID is required');
+  }
 
-            // Send the refresh token as an HttpOnly cookie
-            res.cookie('refreshToken', refreshToken, {
-                httpOnly: true,      // Prevent JavaScript access
-                secure: false,       // Set to true if using HTTPS
-                sameSite: 'Strict',  // Prevent CSRF
-                maxAge: 60 * 24 * 60 * 60 * 1000 // 7 days
-            });
+  const [results] = await db.execute("SELECT id, firstname, lastname, gender, email FROM users WHERE id = ?", [userId]);
 
-            // Respond without sending token in JSON
-            res.status(200).json({
-                message: 'Login successful',
-                user,token,refreshToken
-            });
-        });
-    } catch (err) {
-        console.error('Error during login:', err.message);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-};
+  if (results.length === 0) {
+    res.status(404);
+    throw new Error('No user found');
+  }
 
+  res.status(200).json({
+    status: 'success',
+    user: results[0]
+  });
+});
 
-const findUserById = async (req, res) => {
-    const { userId } = req.params;
+/**
+ * @desc    Logout user
+ * @route   POST /api/v1/auth/logout
+ * @access  Private
+ */
+const logout = asyncHandler(async (req, res) => {
+  res.cookie('token', '', {
+    httpOnly: true,
+    expires: new Date(0),
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+  });
 
-    if (!userId) {
-        return res.status(400).json({ message: 'User ID is required' });
-    }
+  res.status(200).json({
+    status: 'success',
+    message: 'User logged out successfully'
+  });
+});
 
-    try {
-        db.query("SELECT * FROM users WHERE id = ?", [userId], (err, results) => {
-            if (err) {
-                console.error('Database query error:', err); // Improved error logging
-                return res.status(500).json({ message: 'Something went wrong while processing your request' });
-            }
+/**
+ * @desc    Change user password
+ * @route   POST /api/v1/auth/change-password
+ * @access  Private
+ */
+const changeUserPassword = asyncHandler(async (req, res) => {
+  const { newPassword, oldPassword } = req.body;
+  const userId = req.user.id; // From authMiddleware
 
-            if (results.length === 0) {
-                return res.status(404).json({ message: 'No user found' });
-            }
+  if (!newPassword || !oldPassword) {
+    res.status(400);
+    throw new Error('All fields are required');
+  }
 
-            const user = results[0];
-            res.status(200).json({ user });
-        });
-    } catch (err) {
-        console.error('Error in findUserById function:', err.message); // Improved error logging
-        res.status(500).json({ message: 'Internal server error' });
-    }
-};
+  const [results] = await db.execute("SELECT * FROM users WHERE id = ?", [userId]);
+  if (results.length === 0) {
+    res.status(404);
+    throw new Error('No user found');
+  }
+  const user = results[0];
 
+  const isMatch = await bcrypt.compare(oldPassword, user.password);
+  if (!isMatch) {
+    res.status(401);
+    throw new Error('The old password is incorrect');
+  }
 
+  // Validate new password strength
+  if (!validatePassword(newPassword)) {
+    res.status(400);
+    throw new Error("The new password does not meet the security criteria");
+  }
 
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+  const [updateResult] = await db.execute("UPDATE users SET password = ? WHERE id = ?", [hashedPassword, userId]);
 
-    const logout = (req, res) => {
-      
-        res.cookie('token', '', {
-            httpOnly: true,
-            expires: new Date(0), 
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'None',
-        });
-    
-    
-        res.cookie('refreshToken', '', {
-            httpOnly: true,
-            expires: new Date(0), 
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'None',
-        });
-    
-     
-        res.status(200).json({ message: 'User logged out successfully' });
-    };
-    
-    
-    
-     
-    const changeUserPassword=async(req,res)=>{
-        const {newPassword,oldPassword}=req.body;
-         const userId=req.user.id;
-         if(!newPassword || !oldPassword){
-            return res.status(400).json({message:'All fileds is required'});
-         }
+  if (updateResult.affectedRows === 0) {
+    res.status(500);
+    throw new Error('Failed to update password');
+  }
 
-         db.query("SELECT * FROM users WHERE id=?",[userId],async(err,results)=>{
-            if(err){
-                return res.status(500).json({message:'Internal server error'});
-            }
-            if(results.length === 0){
-                return res.status(404).json({message:'No user found'});
-            }
-            const user=results[0];
+  res.status(200).json({
+    status: 'success',
+    message: 'Password updated successfully'
+  });
+});
 
-            //compare password
-            const isMatch=bcrypt.compare(oldPassword,user.password);
-            if(!isMatch){
-                return res.status(401).json({message:'The old password is incorrect'});
-            }
-
-            //hash the new password
-            const hashedPassword=await bcrypt.hash(newPassword,10);
-
-            //update the user password
-            db.query("UPDATE users SET password=? WHERE id=?",[hashedPassword,userId],(err,updateResult)=>{
-                if(err){
-                    return res.status(500).json({message:'Failed to update password'});
-                }
-                res.status(200).json({message:'Password updated successfully',updateResult});
-            })
-         })
-    }
-
-
-
-
-module.exports = { register,login,logout,findUserById,changeUserPassword,refreshAccessToken};
+module.exports = { register, login, logout, findUserById, changeUserPassword };

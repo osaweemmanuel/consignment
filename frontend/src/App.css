@@ -1,9 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-primary-main: #4D148C; /* FedEx Purple */
+  --color-primary-dark: #330b61;
+  --color-primary-light: #6b28b7;
+  
+  --color-accent-main: #FF6600;  /* FedEx Orange */
+  --color-accent-hover: #e65c00;
+  
+  --font-sans: "Inter", sans-serif;
+  
+  --color-blue-50: #f5f3ff;
+  --color-blue-100: #ede9fe;
+  --color-blue-200: #ddd6fe;
+  --color-blue-300: #c4b5fd;
+  --color-blue-400: #a78bfa;
+  --color-blue-500: #8b5cf6;
+  --color-blue-600: #4D148C;
+  --color-blue-700: #330b61;
+  --color-blue-800: #1e0638;
+  --color-blue-900: #0f172a;
+  
+  --animate-fade-in: fadeIn 0.5s ease-out forwards;
+  --animate-slide-up: slideUp 0.6s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes slideUp {
+  0% { transform: translateY(20px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
 html, body {
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
+  min-height: 100%;  
+  overflow-x: hidden;  /* Prevent horizontal overflow only */
+  font-family: 'Inter', sans-serif;
+  box-sizing: border-box;
 }
 
+/* Make sure all elements consider the full height and width */
+*,
+*::before,
+*::after {
+  box-sizing: inherit; /* Apply box-sizing to all elements */
+}
+
+/* Card Styles */
 .card {
   transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
   cursor: pointer;
@@ -26,68 +75,66 @@ html, body {
   }
 }
 
-
-.typing-text::after{
+/* Typing Effect Styles */
+.typing-text::after {
   content: "";
-  animation:blind 1s step-end infinite;
-  display:flex;
+  animation: blind 1s step-end infinite;
+  display: flex;
   justify-content: center;
   text-align: center;
   transition: opacity 0.5s ease-in-out;
-  cursor: pointer; /
+  cursor: pointer;
 }
-.typing-text:hover{
+
+.typing-text:hover {
   cursor: pointer;
   opacity: 0;
 }
 
-.typing-text .fade{
-  opacity: 0.2 ;
+.typing-text .fade {
+  opacity: 0.2;
 }
 
-@keyframes blind{
-  from,to{opacity: 1;}
-  50%{opacity: 0;}
+@keyframes blind {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
 
-
-
-.preloader{
-  top:0;
-  left:0;
-  position:fixed;
-  width:100%;
-  height:100%;
+/* Preloader Styles */
+.preloader {
+  top: 0;
+  left: 0;
+  position: fixed;
+  width: 100%;
+  height: 100%;
   background: rgba(255, 255, 255, 0.8);
-  display:flex;
+  display: flex;
   justify-content: center;
   align-items: center;
   z-index: 9999;
 }
 
-.spinner{
-  border:8px solid #f3f3f3;
-  border-radius:50%;
-  border-top: 8px solid #3498db;
-  border-bottom:8px solid #3498db;
-  width:60px;
-  height:60px;
+.spinner {
+  border: 8px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 8px solid #4D148C;
+  border-bottom: 8px solid #4D148C;
+  width: 60px;
+  height: 60px;
   animation: spin 1s linear infinite;
-
 }
 
-@keyframes spin{
- 0% {transform: rotate(0deg);}
- 100% {transform: rotate(360deg);}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-
-/* flippyForm */
+/* Flippy Card Styles */
 .flippy-container {
   position: relative;
   width: 100%;
   height: 100%;
-  perspective: 1000px; /* Add perspective to the container */
+  perspective: 1000px; /* 3D perspective */
 }
 
 .flippy-card {
@@ -99,15 +146,14 @@ html, body {
 }
 
 .flippy-container.flipped .flippy-card {
-  transform: rotateY(180deg); /* Rotate the card */
+  transform: rotateY(180deg); /* Flip the card */
 }
 
-.front,
-.back {
+.front, .back {
   position: absolute;
   width: 100%;
   height: 100%;
-  backface-visibility: hidden; /* Hide the back face */
+  backface-visibility: hidden; /* Hide back face */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -121,12 +167,11 @@ html, body {
 
 .back {
   background-color: #f0f0f0; /* Back side background */
-  transform: rotateY(180deg); /* Rotate back side to hide */
+  transform: rotateY(180deg); /* Hide back side initially */
 }
-/* 
 
-dashboard */
+/* Active Link in Dashboard */
 .active-link {
   background-color: rgba(63, 81, 181, 0.1); /* Highlight active link */
-  font-weight: bold; /* Make the active link text bold */
+  font-weight: bold; /* Bold text for active link */
 }
