@@ -87,7 +87,7 @@ app.use((req, res, next) => {
     });
 });
 
-app.use(express.static(path.join(__dirname, "dist"))); // 🚀 Serve the built frontend from inside the root folder
+// app.use(express.static(path.join(__dirname, "dist"))); // Disabled: Frontend is hosted elsewhere now
 app.use(cookieParser());
 app.use(compression());
 
@@ -102,19 +102,24 @@ app.use('/api/v1/receipts', receiptRoute);
 app.use('/api/v1/contact', contactRouter);
 app.use('/api/v1', protectedRoute);
 
-// 🔹 Serve Frontend (Production Mode)
-const frontendPath = path.join(__dirname, 'dist');
-app.use(express.static(frontendPath));
+// 🔹 Root Route - Backend Status
+app.get('/', (req, res) => {
+    res.status(200).json({ 
+        status: 'success', 
+        message: 'High Standard Logistics API is operational', 
+        version: '2.0.0 (DO PaaS)',
+        timestamp: new Date()
+    });
+});
 
 // 🔹 Health Check
 app.get('/api/health', (req, res) => {
     res.status(200).json({ status: 'healthy', timestamp: new Date() });
 });
 
-// 🔹 Handle Frontend SPA Routing (Catch-all)
-app.get('*', (req, res, next) => {
-    if (req.url.startsWith('/api')) return next();
-    res.sendFile(path.join(frontendPath, 'index.html'));
+// 🔹 Catch-all for undefined API routes
+app.all('/api/*', (req, res) => {
+    res.status(404).json({ status: 'error', message: `Route ${req.originalUrl} not found on this server` });
 });
 
 // 🔹 Error Handling
