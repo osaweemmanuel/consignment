@@ -387,7 +387,9 @@ const ParcelDetail = () => {
                     </div>
                     <div className="flex items-center gap-3">
                         <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 italic">25.2°N | 55.2°E LOCK</span>
+                        <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 italic">
+                            {parseFloat(result.currentLatitude || 0).toFixed(1)}°N | {parseFloat(result.currentLongitude || 0).toFixed(1)}°E LOCK
+                        </span>
                     </div>
                 </div>
                 <div className="h-[450px] w-full transform group-hover:scale-[1.01] transition-transform duration-1000 shadow-inner">
@@ -440,24 +442,24 @@ const ParcelDetail = () => {
                   </div>
                 </div>
                 </Reveal>
-              {/* ASSET TRAY: Multi-Image Terminal */}
-              {result.images && result.images.length > 0 && (
-                <Reveal delay={0.4}>
-                <div className="bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden shadow-2xl group hover:shadow-primary-main/5 transition-all">
-                  <div className="p-8 bg-slate-900 text-white flex items-center justify-between relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary-main/10 rounded-full blur-3xl" />
-                    <span className="font-black text-[11px] tracking-[0.4em] uppercase italic relative z-10">Cargo Visualization Manifest</span>
-                    <Package size={18} className="text-primary-light relative z-10" />
+              {/* ASSET TRAY: Manifest Visualization & Description */}
+              <Reveal delay={0.4}>
+              <div className="bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden shadow-2xl group hover:shadow-primary-main/5 transition-all">
+                <div className="p-8 bg-slate-900 text-white flex items-center justify-between relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-primary-main/10 rounded-full blur-3xl" />
+                  <span className="font-black text-[11px] tracking-[0.4em] uppercase italic relative z-10">Cargo Visualization Manifest</span>
+                  <Package size={18} className="text-primary-light relative z-10" />
+                </div>
+                <div className="p-8 space-y-8">
+                  {/* Integrated Manifest Description */}
+                  <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 shadow-inner">
+                      <span className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 block mb-4 italic">Itemized Description</span>
+                      <div className="text-[12px] font-bold text-slate-700 leading-relaxed italic whitespace-pre-wrap">
+                          {result.description || "The consignor has documented this cargo as part of a secured transit manifest without additional itemization nodes."}
+                      </div>
                   </div>
-                  <div className="p-8 space-y-8">
-                    {/* Integrated Manifest Description */}
-                    <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 shadow-inner">
-                        <span className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 block mb-4 italic">Itemized Description</span>
-                        <div className="text-[12px] font-bold text-slate-700 leading-relaxed italic whitespace-pre-wrap">
-                            {result.description || "The consignor has documented this cargo as part of a secured transit manifest without additional itemization nodes."}
-                        </div>
-                    </div>
 
+                  {result.images && result.images.length > 0 && (
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                       {result.images.map((img, i) => (
                         <div key={i} className="aspect-square rounded-2xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-2xl transition-all group/asset cursor-pointer ring-offset-2 hover:ring-2 hover:ring-primary-main">
@@ -470,10 +472,10 @@ const ParcelDetail = () => {
                         </div>
                       ))}
                     </div>
-                  </div>
+                  )}
                 </div>
-                </Reveal>
-              )}
+              </div>
+              </Reveal>
             </div>
             </div>
 

@@ -56,7 +56,7 @@ const isDev = import.meta.env.DEV;
 const baseQuery = fetchBaseQuery({
   baseUrl: import.meta.env.VITE_API_URL 
       ? `${import.meta.env.VITE_API_URL}api/v1`
-      : (isDev ? 'http://localhost:3000/api/v1' : 'https://tunshpreshgloballtd.com/api/v1'),
+      : (isDev ? 'http://localhost:3000/api/v1' : 'https://plankton-app-tr2ek.ondigitalocean.app/api/v1'),
   credentials: 'include',
   prepareHeaders: (headers, { getState }) => {
     // Retrieve the token from the auth slice
@@ -75,8 +75,11 @@ const baseQueryNoRefresh = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
 
   if (result.error && result.error.status === 401) {
-    console.log('401 error encountered - logging out user');
-    api.dispatch(logout());
+    const isAuthRoute = args?.url?.includes('/auth/login') || args?.url?.includes('/auth/register');
+    if (!isAuthRoute) {
+      console.log('401 error encountered - logging out user');
+      api.dispatch(logout());
+    }
   }
 
   return result;

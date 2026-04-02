@@ -43,9 +43,9 @@ const LoginPage = () => {
         try {
             const resp = await login({ email, password }).unwrap();
             dispatch(setCredentials({ 
-               userInfo:resp.user,
-               token:resp.token,
-               refreshToken:resp.refreshToken
+               userInfo: resp.userInfo || resp.user,
+               token: resp.token,
+               refreshToken: resp.refreshToken
             }));
             navigate("/admin/dashboard");
         } catch (err) {

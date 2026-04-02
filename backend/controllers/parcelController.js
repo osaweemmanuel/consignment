@@ -349,6 +349,7 @@ const updateParcelLocation = async (req, res) => {
           release_fee = ?,
           dispatchDate = ?,
           deliveryDate = ?,
+          description = ?,
           updatedAt = ?
       WHERE trackingNumber = ?`;
 
@@ -370,6 +371,7 @@ const updateParcelLocation = async (req, res) => {
       release_fee !== undefined ? release_fee : updatedParcel.release_fee,
       dispatchDate !== undefined ? dispatchDate : updatedParcel.dispatchDate,
       deliveryDate !== undefined ? deliveryDate : updatedParcel.deliveryDate,
+      description !== undefined ? description : updatedParcel.description,
       date,
       trackingNumberString
     ];

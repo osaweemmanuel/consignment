@@ -40,7 +40,7 @@ const ContactPage = () => {
     setStatus({ type: '', message: '' });
 
     try {
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/api/v1/contact`, {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'https://plankton-app-tr2ek.ondigitalocean.app'}/api/v1/contact`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formData)

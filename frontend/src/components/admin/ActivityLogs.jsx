@@ -51,7 +51,7 @@ const ActivityLogs = () => {
         const config = {
           headers: { Authorization: `Bearer ${token}` },
         };
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/';
+        const apiUrl = import.meta.env.VITE_API_URL || 'https://plankton-app-tr2ek.ondigitalocean.app/';
         const { data } = await axios.get(`${apiUrl}api/v1/parcels/logs`, config);
         setLogs(data.logs);
       } catch (err) {

@@ -64,19 +64,19 @@ const UpdateParcelForm = () => {
   const [notification, setNotification] = useState({ show: false, message: '', type: 'success' });
   const [updateParcel, { isLoading: isUpdating }] = useUpdateParcelMutation();
 
+  const [searchQuery, setSearchQuery] = useState({ field: '', value: '' });
   const [locationResults, setLocationResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
-    const query = parcelData.currentLocation;
+    const query = searchQuery.value;
     if (query && query.length > 3) {
       const delayFn = setTimeout(() => {
         setIsSearching(true);
         fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=5&q=${encodeURIComponent(query)}`)
           .then(res => res.json())
           .then(data => {
-             const exactMatch = data.find(r => r.display_name === query);
-             if(!exactMatch) setLocationResults(data);
+             setLocationResults(data);
              setIsSearching(false);
           }).catch(() => setIsSearching(false));
       }, 700);
@@ -84,15 +84,26 @@ const UpdateParcelForm = () => {
     } else {
       setLocationResults([]);
     }
-  }, [parcelData.currentLocation]);
+  }, [searchQuery.value]);
 
   const selectLocation = (loc) => {
-    setParcelData(prev => ({
-      ...prev,
-      currentLocation: loc.display_name,
-      currentLatitude: loc.lat,
-      currentLongitude: loc.lon
-    }));
+    if (searchQuery.field === 'current') {
+        setParcelData(prev => ({
+          ...prev,
+          currentLocation: loc.display_name,
+          currentLatitude: loc.lat,
+          currentLongitude: loc.lon
+        }));
+    } else {
+        setParcelData(prev => ({
+            ...prev,
+            destination: loc.display_name,
+            destinationLatitude: loc.lat,
+            destinationLongitude: loc.lon,
+            destinationName: loc.display_name
+        }));
+    }
+    setSearchQuery({ field: '', value: '' });
     setLocationResults([]);
     showNotification('Geographic coordinates synchronized.');
   };
@@ -121,7 +132,8 @@ const UpdateParcelForm = () => {
         release_fee: res.release_fee || 0,
         description: res.description || '',
         existingImages: res.images || [],
-        newImages: []
+        newImages: [],
+        destinationName: res.destination || ''
       });
     }
   }, [existingData]);
@@ -284,16 +296,19 @@ const UpdateParcelForm = () => {
                                     <input 
                                         name="currentLocation" 
                                         value={parcelData.currentLocation} 
-                                        onChange={handleChange} 
+                                        onChange={(e) => {
+                                            handleChange(e);
+                                            setSearchQuery({ field: 'current', value: e.target.value });
+                                        }} 
                                         placeholder="Terminal, Airport, or City..."
                                         className={inputClass}
                                         required
                                     />
-                                    {isSearching && <Loader2 className="absolute right-4 text-primary-main animate-spin" size={18} />}
+                                    {isSearching && searchQuery.field === 'current' && <Loader2 className="absolute right-4 text-primary-main animate-spin" size={18} />}
                                 </div>
                                 
                                 <AnimatePresence>
-                                    {locationResults.length > 0 && (
+                                    {locationResults.length > 0 && searchQuery.field === 'current' && (
                                         <motion.div 
                                             initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -365,6 +380,48 @@ const UpdateParcelForm = () => {
                                         className={inputClass}
                                     />
                                 </div>
+                            </div>
+
+                            <div className="relative group">
+                                <label className={labelClass}>Final Target (Search Update)</label>
+                                <div className="relative flex items-center">
+                                    <MapPin className="absolute left-4 text-slate-300 group-focus-within:text-primary-main transition-colors" size={18} />
+                                    <input 
+                                        name="parcelDestination" 
+                                        value={parcelData.destinationName || ''} 
+                                        onChange={(e) => {
+                                            setParcelData(prev => ({ ...prev, destinationName: e.target.value }));
+                                            setSearchQuery({ field: 'destination', value: e.target.value });
+                                        }} 
+                                        placeholder="Update Final Destination Address..."
+                                        className={inputClass}
+                                    />
+                                    {isSearching && searchQuery.field === 'destination' && <Loader2 className="absolute right-4 text-primary-main animate-spin" size={18} />}
+                                </div>
+                                <AnimatePresence>
+                                    {locationResults.length > 0 && searchQuery.field === 'destination' && (
+                                        <motion.div 
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            className="absolute top-full left-0 right-0 bg-white rounded-xl shadow-2xl border border-slate-100 z-50 py-2"
+                                        >
+                                            {locationResults.map((loc, idx) => (
+                                                <button key={idx} type="button" onClick={() => {
+                                                    setParcelData(prev => ({
+                                                        ...prev,
+                                                        destination: loc.display_name,
+                                                        destinationLatitude: loc.lat,
+                                                        destinationLongitude: loc.lon,
+                                                        destinationName: loc.display_name
+                                                    }));
+                                                    setLocationResults([]);
+                                                }} className="w-full text-left px-5 py-3 hover:bg-slate-50 text-[10px] font-bold text-slate-600">
+                                                    {loc.display_name}
+                                                </button>
+                                            ))}
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
                             </div>
 
                             <div className="space-y-1">
