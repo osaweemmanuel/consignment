@@ -47,7 +47,7 @@ app.use(helmet({
             scriptSrc: ["'self'", "'unsafe-inline'", "https://unpkg.com"],
             styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://unpkg.com"],
             imgSrc: ["'self'", "data:", "blob:", "https://*.basemaps.cartocdn.com", "https://unpkg.com", "https://res.cloudinary.com"],
-            connectSrc: ["'self'", "https://*.basemaps.cartocdn.com"],
+            connectSrc: ["'self'", "https://*.basemaps.cartocdn.com", "https://plankton-app-tr2ek.ondigitalocean.app"],
             fontSrc: ["'self'", "https://fonts.gstatic.com"],
             objectSrc: ["'none'"],
             mediaSrc: ["'self'"],
