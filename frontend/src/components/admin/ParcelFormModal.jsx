@@ -145,7 +145,7 @@ const ParcelFormModal = () => {
       receiverName: '', receiverPhone: '', receiverGender: '', receiverNationality: '', receiverEmail: '',
       origin: '', weight: '', destination: '', destinationLatitude: '', destinationLongitude: '',
       service_type: '', description: '', parcelName: '', dispatchDate: '', deliveryDate: '', image: null,
-      freight_charge: 0, insurance_fee: 0, tax_due: 0
+      freight_charge: 0, insurance_fee: 0, tax_due: 0, quantity: 1
     });
   };
 

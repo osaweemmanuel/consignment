@@ -148,7 +148,8 @@ const parcelCreation = async (req, res) => {
       origin, weight, destination, destinationLatitude, destinationLongitude,
       service_type, description, parcelName, dispatchDate, deliveryDate,
       freight_charge, insurance_fee, tax_due,
-      originLatitude, originLongitude, currentLatitude, currentLongitude
+      originLatitude, originLongitude, currentLatitude, currentLongitude,
+      quantity
     } = req.body;
 
     const trackingNumber = generateTrackingNumber();
@@ -183,9 +184,10 @@ const parcelCreation = async (req, res) => {
         origin, weight, destination, originLatitude, originLongitude, currentLatitude, currentLongitude, 
         destinationLatitude, destinationLongitude, 
         service_type, description, parcelName, dispatchDate, deliveryDate, imageUrl, imagePublicId,
-        freight_charge, insurance_fee, tax_due
+        freight_charge, insurance_fee, tax_due,
+        quantity
       ) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     const values = [
       trackingNumber, userId, senderName, senderPhone, senderNationality, senderGender, senderEmail,
@@ -194,7 +196,8 @@ const parcelCreation = async (req, res) => {
       originLatitude || 0, originLongitude || 0, currentLatitude || 0, currentLongitude || 0,
       destinationLatitude || 0, destinationLongitude || 0,
       service_type, description, parcelName, dispatchDate, deliveryDate, imageUrl, imagePublicId,
-      freight_charge || 0, insurance_fee || 0, tax_due || 0
+      freight_charge || 0, insurance_fee || 0, tax_due || 0,
+      quantity || 1
     ];
 
     const [result] = await db.execute(query, values);
@@ -312,7 +315,8 @@ const updateParcelLocation = async (req, res) => {
       release_fee,
       dispatchDate,
       deliveryDate,
-      keepImages // Newly added to support selective image retention
+      keepImages,
+      quantity
     } = req.body;
 
     const trackingNumberString = trackingNumber.toString().trim();
@@ -350,6 +354,7 @@ const updateParcelLocation = async (req, res) => {
           dispatchDate = ?,
           deliveryDate = ?,
           description = ?,
+          quantity = ?,
           updatedAt = ?
       WHERE trackingNumber = ?`;
 
@@ -372,6 +377,7 @@ const updateParcelLocation = async (req, res) => {
       dispatchDate !== undefined ? dispatchDate : updatedParcel.dispatchDate,
       deliveryDate !== undefined ? deliveryDate : updatedParcel.deliveryDate,
       description !== undefined ? description : updatedParcel.description,
+      quantity !== undefined ? quantity : updatedParcel.quantity,
       date,
       trackingNumberString
     ];
