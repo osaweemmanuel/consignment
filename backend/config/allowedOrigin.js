@@ -8,8 +8,12 @@ const allowedOrigins = [
   "http://localhost:3000",
   "https://tunshpreshgloballtd.com",
   "http://tunshpreshgloballtd.com",
+  "https://www.tunshpreshgloballtd.com",
+  "http://www.tunshpreshgloballtd.com",
   "https://tunshpreshglobal.com",
-  "http://tunshpreshglobal.com"
+  "http://tunshpreshglobal.com",
+  "https://www.tunshpreshglobal.com",
+  "http://www.tunshpreshglobal.com"
 ];
 
 module.exports = allowedOrigins;
