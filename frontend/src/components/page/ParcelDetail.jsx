@@ -30,7 +30,10 @@ import {
   Camera,
   Mail,
   Scale,
-  X
+  X,
+  Info,
+  Lock,
+  PhoneCall
 } from 'lucide-react';
 import html2pdf from 'html2pdf.js';
 import { QRCodeSVG } from 'qrcode.react';
