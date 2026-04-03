@@ -58,7 +58,8 @@ const UpdateParcelForm = () => {
     release_fee: 0,
     description: '',
     newImages: [], // For new uploads
-    existingImages: [] // Loaded from DB
+    existingImages: [], // Loaded from DB
+    quantity: 1
   });
 
   const [notification, setNotification] = useState({ show: false, message: '', type: 'success' });
@@ -133,7 +134,8 @@ const UpdateParcelForm = () => {
         description: res.description || '',
         existingImages: res.images || [],
         newImages: [],
-        destinationName: res.destination || ''
+        destinationName: res.destination || '',
+        quantity: res.quantity || 1
       });
     }
   }, [existingData]);
@@ -456,17 +458,34 @@ const UpdateParcelForm = () => {
                                 </div>
                             </div>
 
-                            <div className="space-y-1">
-                                <label className={labelClass}>Expected Delivery</label>
-                                <div className="relative flex items-center">
-                                    <Clock className="absolute left-4 text-slate-300" size={18} />
-                                    <input 
-                                        type="date"
-                                        name="deliveryDate" 
-                                        value={parcelData.deliveryDate} 
-                                        onChange={handleChange} 
-                                        className={inputClass}
-                                    />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-1">
+                                    <label className={labelClass}>Expected Delivery</label>
+                                    <div className="relative flex items-center">
+                                        <Clock className="absolute left-4 text-slate-300" size={18} />
+                                        <input 
+                                            type="date"
+                                            name="deliveryDate" 
+                                            value={parcelData.deliveryDate} 
+                                            onChange={handleChange} 
+                                            className={inputClass}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-1">
+                                    <label className={labelClass}>Dispatch Quantity (Units)</label>
+                                    <div className="relative flex items-center">
+                                        <Package className="absolute left-4 text-slate-300" size={18} />
+                                        <input 
+                                            type="number"
+                                            name="quantity" 
+                                            value={parcelData.quantity} 
+                                            onChange={handleChange} 
+                                            placeholder="1"
+                                            className={inputClass}
+                                        />
+                                    </div>
                                 </div>
                             </div>
 

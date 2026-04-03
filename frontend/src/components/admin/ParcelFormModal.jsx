@@ -324,6 +324,10 @@ const ParcelFormModal = () => {
                                     {serviceTypeOptions.map(o => <option key={o} value={o}>{o}</option>)}
                                 </select>
                             </div>
+                            <div>
+                                <label className={labelClass}>Dispatch Quantity (Units)</label>
+                                <input name="quantity" type="number" value={parcelData.quantity} onChange={handleChange} placeholder="1" className={inputClass} required />
+                            </div>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">

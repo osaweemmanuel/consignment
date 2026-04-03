@@ -453,7 +453,13 @@ const ParcelDetail = () => {
                 <div className="p-8 space-y-8">
                   {/* Integrated Manifest Description */}
                   <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 shadow-inner">
-                      <span className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 block mb-4 italic">Itemized Description</span>
+                      <div className="flex justify-between items-center mb-4">
+                        <span className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 italic">Itemized Manifest Details</span>
+                        <div className="flex items-center gap-2 bg-slate-200/50 px-3 py-1 rounded-lg">
+                           <Package size={10} className="text-slate-400" />
+                           <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">{result.quantity || 1} UNIT(S)</span>
+                        </div>
+                      </div>
                       <div className="text-[12px] font-bold text-slate-700 leading-relaxed italic whitespace-pre-wrap">
                           {result.description || "The consignor has documented this cargo as part of a secured transit manifest without additional itemization nodes."}
                       </div>

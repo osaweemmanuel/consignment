@@ -330,8 +330,18 @@ const updateParcelLocation = async (req, res) => {
       return res.status(404).json({ message: 'No parcel record found' });
     }
     const updatedParcel = parcelResults[0];
-
     const date = new Date();
+
+    // 📍 COORD RECTIFICATION: Convert empty strings to null or fallback
+    const dLat = destinationLatitude && destinationLatitude !== '' ? destinationLatitude : (updatedParcel.destinationLatitude || 0);
+    const dLng = destinationLongitude && destinationLongitude !== '' ? destinationLongitude : (updatedParcel.destinationLongitude || 0);
+    const oLat = originLatitude && originLatitude !== '' ? originLatitude : (updatedParcel.originLatitude || 0);
+    const oLng = originLongitude && originLongitude !== '' ? originLongitude : (updatedParcel.originLongitude || 0);
+    const cLat = currentLatitude && currentLatitude !== '' ? currentLatitude : (updatedParcel.currentLatitude || 0);
+    const cLng = currentLongitude && currentLongitude !== '' ? currentLongitude : (updatedParcel.currentLongitude || 0);
+    const cLoc = currentLocation || updatedParcel.currentLocation;
+    const pStat = progressStatus !== undefined ? progressStatus : (updatedParcel.progressStatus || 0);
+    const pStatus = status || updatedParcel.status;
 
     // Update main parcel record
     const updateQuery = `
@@ -359,15 +369,15 @@ const updateParcelLocation = async (req, res) => {
       WHERE trackingNumber = ?`;
 
     const queryParams = [
-      currentLocation || updatedParcel.currentLocation, 
-      destinationLongitude || updatedParcel.destinationLongitude, 
-      destinationLatitude || updatedParcel.destinationLatitude, 
-      originLatitude || updatedParcel.originLatitude,
-      originLongitude || updatedParcel.originLongitude,
-      currentLatitude || updatedParcel.currentLatitude,
-      currentLongitude || updatedParcel.currentLongitude,
-      progressStatus !== undefined ? progressStatus : updatedParcel.progressStatus, 
-      status || updatedParcel.status,
+      cLoc, 
+      dLng, 
+      dLat, 
+      oLat,
+      oLng,
+      cLat,
+      cLng,
+      pStat, 
+      pStatus,
       freight_charge !== undefined ? freight_charge : updatedParcel.freight_charge,
       insurance_fee !== undefined ? insurance_fee : updatedParcel.insurance_fee,
       tax_due !== undefined ? tax_due : updatedParcel.tax_due,
@@ -441,11 +451,11 @@ const updateParcelLocation = async (req, res) => {
     const historyParams = [
       updatedParcel.id,
       trackingNumberString,
-      currentLocation,
-      destinationLongitude,
-      destinationLatitude,
-      progressStatus,
-      status,
+      cLoc,
+      dLng,
+      dLat,
+      pStat,
+      pStatus,
       date
     ];
     await db.execute(historyQuery, historyParams);
