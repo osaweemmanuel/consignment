@@ -149,7 +149,9 @@ const parcelCreation = async (req, res) => {
       service_type, description, parcelName, dispatchDate, deliveryDate,
       freight_charge, insurance_fee, tax_due,
       originLatitude, originLongitude, currentLatitude, currentLongitude,
-      quantity
+      quantity,
+      descriptions,
+      quantities
     } = req.body;
 
     const trackingNumber = generateTrackingNumber();
@@ -157,15 +159,22 @@ const parcelCreation = async (req, res) => {
     let imageUrl = null;
     let imagePublicId = null;
     const uploadedImages = [];
+    
+    // Normalize arrays
+    const descArray = Array.isArray(descriptions) ? descriptions : [descriptions];
+    const qtyArray = Array.isArray(quantities) ? quantities : [quantities];
 
     if (req.files && req.files.length > 0) {
-      for (const file of req.files) {
+      for (let i = 0; i < req.files.length; i++) {
+        const file = req.files[i];
         try {
           const uploadResponse = await cloudinary.uploader.upload(file.path, { folder: 'parcel_images' });
           await fs.unlink(file.path);
           uploadedImages.push({
             url: uploadResponse.secure_url,
-            publicId: uploadResponse.public_id
+            publicId: uploadResponse.public_id,
+            description: descArray[i] || '',
+            quantity: parseInt(qtyArray[i]) || 1
           });
         } catch (uploadError) {
           console.error("Cloudinary Error:", uploadError);
@@ -176,6 +185,11 @@ const parcelCreation = async (req, res) => {
         imagePublicId = uploadedImages[0].publicId;
       }
     }
+
+    // Calculate total quantity from items if not provided
+    const totalQuantity = uploadedImages.length > 0 
+        ? uploadedImages.reduce((sum, item) => sum + item.quantity, 0)
+        : (parseInt(quantity) || 1);
 
     const query = `
       INSERT INTO parcels (
@@ -197,7 +211,7 @@ const parcelCreation = async (req, res) => {
       destinationLatitude || 0, destinationLongitude || 0,
       service_type, description, parcelName, dispatchDate, deliveryDate, imageUrl, imagePublicId,
       freight_charge || 0, insurance_fee || 0, tax_due || 0,
-      quantity || 1
+      totalQuantity
     ];
 
     const [result] = await db.execute(query, values);
@@ -205,8 +219,8 @@ const parcelCreation = async (req, res) => {
 
     // Batch insert additional images into parcel_images terminal
     if (uploadedImages.length > 0) {
-      const imageQuery = "INSERT INTO parcel_images (parcel_id, imageUrl, imagePublicId) VALUES ?";
-      const imageValues = uploadedImages.map(img => [parcelId, img.url, img.publicId]);
+      const imageQuery = "INSERT INTO parcel_images (parcel_id, imageUrl, imagePublicId, description, quantity) VALUES ?";
+      const imageValues = uploadedImages.map(img => [parcelId, img.url, img.publicId, img.description, img.quantity]);
       await db.query(imageQuery, [imageValues]);
     }
 
@@ -279,8 +293,12 @@ const getParcelDetail = async (req, res) => {
     const result = results[0];
 
     // Fetch all associated assets from the parcel_images terminal
-    const [images] = await db.execute("SELECT imageUrl FROM parcel_images WHERE parcel_id = ?", [result.id]);
-    result.images = images.map(img => img.imageUrl);
+    const [images] = await db.execute("SELECT imageUrl, description, quantity FROM parcel_images WHERE parcel_id = ?", [result.id]);
+    result.images = images.map(img => ({
+        url: img.imageUrl,
+        description: img.description,
+        quantity: img.quantity
+    }));
 
     // 🗓️ Format dates for Frontend compatibility (e.g. from ISO/Date to YYYY-MM-DD)
     const formatDate = (dateValue) => {

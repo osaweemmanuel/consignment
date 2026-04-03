@@ -61,6 +61,7 @@ const ParcelFormModal = () => {
   const [searchQuery, setSearchQuery] = useState({ field: '', value: '' });
   const [locationResults, setLocationResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [items, setItems] = useState([{ description: '', quantity: 1, image: null, preview: null }]);
   const [imagePreviews, setImagePreviews] = useState([]);
 
   // Handle Image Preview Cleanup
@@ -194,13 +195,18 @@ const ParcelFormModal = () => {
     e.preventDefault();
     const formData = new FormData();
     Object.keys(parcelData).forEach(key => {
-      if (key === 'image' && Array.isArray(parcelData[key])) {
-          parcelData[key].forEach(file => {
-              formData.append('image', file);
-          });
-      } else {
+      if (key !== 'image') {
         formData.append(key, parcelData[key]);
       }
+    });
+
+    // Handle Itemized Manifest
+    items.forEach((item, index) => {
+        if (item.image) {
+            formData.append('image', item.image);
+            formData.append('descriptions', item.description);
+            formData.append('quantities', item.quantity);
+        }
     });
 
     try {
@@ -435,81 +441,141 @@ const ParcelFormModal = () => {
                         </div>
                     </div>
 
-                    {/* DETAILED MANIFEST & IMAGE UPLOAD */}
-                    <div className="space-y-6">
-                        <div className="flex items-center justify-between">
-                            <h4 className="text-[11px] font-black text-primary-main uppercase tracking-widest whitespace-nowrap">Asset Manifest & Itemization</h4>
-                            {parcelData.image && parcelData.image.length > 0 && (
-                                <button 
-                                    type="button" 
-                                    onClick={clearAllImages}
-                                    className="text-[9px] font-black text-rose-500 uppercase tracking-widest hover:text-rose-600 flex items-center gap-1 transition-colors"
-                                >
-                                    <Trash2 size={12} /> Purge All Assets
-                                </button>
-                            )}
+                    {/* 🧩 CARGO ITEMIZATION: Description + Units + Image pairing */}
+                    <div className="space-y-8 bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-xl">
+                        <div className="flex items-center justify-between border-b border-slate-50 pb-6 mb-6">
+                            <div>
+                                <h4 className="text-[13px] font-black text-slate-950 uppercase tracking-tighter">Cargo Itemization Manifest</h4>
+                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1">Digital Asset Induction & Registry Pairing</p>
+                            </div>
+                            <button 
+                                type="button" 
+                                onClick={() => setItems([...items, { description: '', quantity: 1, image: null, preview: null }])}
+                                className="flex items-center gap-2 bg-slate-950 hover:bg-primary-main text-white px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-xl active:scale-95"
+                            >
+                                <Plus size={14} /> Add Manifest Unit
+                            </button>
                         </div>
                         
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                            {/* Detailed Description */}
-                            <div className="space-y-4">
-                                <label className={labelClass}>Detailed Item Manifest / Notes</label>
-                                <textarea 
-                                    name="description" 
-                                    value={parcelData.description} 
-                                    onChange={handleChange} 
-                                    placeholder="Provide a comprehensive breakdown of the consignment contents, serial numbers, or special handling instructions..." 
-                                    className={`${inputClass} h-[240px] py-4 resize-none leading-relaxed`}
-                                    required
-                                />
-                            </div>
-
-                            {/* Image Upload & Previews */}
-                            <div className="space-y-4 flex flex-col">
-                                <label className={labelClass}>Digital Asset Induction (Photos)</label>
-                                <div className="flex-1 space-y-4">
-                                    <div className="relative group overflow-hidden border-2 border-dashed border-slate-200 rounded-xl hover:border-primary-main hover:bg-primary-main/5 transition-all h-32">
-                                        <input type="file" name="image" onChange={handleChange} className="absolute inset-0 opacity-0 cursor-pointer z-10" multiple />
-                                        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-                                            <div className="p-2 bg-white border border-slate-200 rounded-lg text-slate-300 group-hover:text-primary-main group-hover:border-primary-main transition-all">
-                                                <FilePlus size={20} />
+                        <div className="space-y-6">
+                            {items.map((item, index) => (
+                                <div key={index} className="group relative bg-slate-50/50 p-8 rounded-[2rem] border border-slate-100 hover:bg-white hover:shadow-2xl hover:shadow-slate-200/40 transition-all">
+                                    {items.length > 1 && (
+                                        <button 
+                                            type="button" 
+                                            onClick={() => setItems(items.filter((_, i) => i !== index))}
+                                            className="absolute -top-3 -right-3 w-8 h-8 bg-rose-500 text-white rounded-lg flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-all hover:scale-110 active:scale-95"
+                                        >
+                                            <Trash2 size={14} />
+                                        </button>
+                                    )}
+                                    
+                                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                                        {/* Image Upload Area */}
+                                        <div className="lg:col-span-3">
+                                            <div className="relative aspect-square rounded-[1.5rem] overflow-hidden bg-slate-100 border-2 border-dashed border-slate-200 group-hover:border-primary-main/30 group-hover:bg-primary-main/5 transition-all">
+                                                {item.preview ? (
+                                                    <>
+                                                        <img src={item.preview} className="w-full h-full object-cover" />
+                                                        <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                            <label className="p-2 bg-white rounded-lg cursor-pointer hover:scale-110 transition-transform">
+                                                                <ImageIcon size={16} className="text-primary-main" />
+                                                                <input 
+                                                                    type="file" 
+                                                                    className="hidden" 
+                                                                    onChange={(e) => {
+                                                                        const file = e.target.files[0];
+                                                                        if (file) {
+                                                                            const newItems = [...items];
+                                                                            newItems[index].image = file;
+                                                                            newItems[index].preview = URL.createObjectURL(file);
+                                                                            setItems(newItems);
+                                                                        }
+                                                                    }}
+                                                                />
+                                                            </label>
+                                                        </div>
+                                                    </>
+                                                ) : (
+                                                    <label className="absolute inset-0 flex flex-col items-center justify-center cursor-pointer p-4 text-center">
+                                                        <FilePlus size={24} className="text-slate-300 mb-2 group-hover:text-primary-main transition-colors" />
+                                                        <span className="text-[8px] font-black text-slate-400 group-hover:text-slate-600 uppercase tracking-widest">Attach Visual Registry</span>
+                                                        <input 
+                                                            type="file" 
+                                                            className="hidden" 
+                                                            onChange={(e) => {
+                                                                const file = e.target.files[0];
+                                                                if (file) {
+                                                                    const newItems = [...items];
+                                                                    newItems[index].image = file;
+                                                                    newItems[index].preview = URL.createObjectURL(file);
+                                                                    setItems(newItems);
+                                                                }
+                                                            }}
+                                                        />
+                                                    </label>
+                                                )}
                                             </div>
-                                            <p className="text-[10px] font-bold text-slate-400 group-hover:text-slate-600 px-4 text-center">
-                                                Bridge photos to ledger
-                                            </p>
+                                        </div>
+
+                                        {/* Intelligence Details */}
+                                        <div className="lg:col-span-9 space-y-6 pt-2">
+                                            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                                                <div className="md:col-span-3">
+                                                    <label className={labelClass}>Cargo Description Node {index + 1}</label>
+                                                    <input 
+                                                        value={item.description}
+                                                        onChange={(e) => {
+                                                            const newItems = [...items];
+                                                            newItems[index].description = e.target.value;
+                                                            setItems(newItems);
+                                                        }}
+                                                        placeholder="Manifest breakdown (e.g. Industrial Engine Block, Serial: #8822)"
+                                                        className={inputClass}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className={labelClass}>Unit Count</label>
+                                                    <input 
+                                                        type="number"
+                                                        value={item.quantity}
+                                                        onChange={(e) => {
+                                                            const newItems = [...items];
+                                                            newItems[index].quantity = parseInt(e.target.value) || 0;
+                                                            setItems(newItems);
+                                                        }}
+                                                        placeholder="1"
+                                                        className={`${inputClass} text-center`}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-slate-300" />
+                                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Linked Assets: {item.image ? '1 File Inducted' : 'Waiting for telemetry...'}</span>
+                                            </div>
                                         </div>
                                     </div>
-
-                                    {/* PREVIEW CONTAINER */}
-                                    <div className="bg-slate-50 rounded-xl border border-slate-200 p-4 min-h-[92px] flex-1">
-                                        {imagePreviews.length > 0 ? (
-                                            <div className="grid grid-cols-4 gap-2">
-                                                {imagePreviews.map((url, index) => (
-                                                    <div key={index} className="relative aspect-square group rounded-lg overflow-hidden border border-slate-200 bg-white">
-                                                        <img src={url} alt="Manifest" className="w-full h-full object-cover" />
-                                                        <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                                            <button 
-                                                                type="button" 
-                                                                onClick={() => removeImage(index)}
-                                                                className="p-1 bg-rose-500 text-white rounded-md hover:bg-rose-600 transition-colors"
-                                                            >
-                                                                <Trash2 size={12} />
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        ) : (
-                                            <div className="h-full flex flex-col items-center justify-center gap-2 text-slate-300 min-h-[60px]">
-                                                <ImageIcon size={24} />
-                                                <span className="text-[9px] font-black uppercase tracking-widest">Awaiting Induction</span>
-                                            </div>
-                                        )}
-                                    </div>
                                 </div>
-                                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em] italic">
-                                    JPG, PNG, WEBP (MAX 5MB/UNIT)
-                                </p>
+                            ))}
+                        </div>
+
+                        {/* Summary Bar */}
+                        <div className="mt-10 p-6 bg-slate-950 rounded-2xl flex items-center justify-between shadow-2xl">
+                            <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-primary-light">
+                                    <Calculator size={20} />
+                                </div>
+                                <div>
+                                    <span className="block text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Cumulative Unit Count</span>
+                                    <span className="text-xl font-black text-white tracking-tighter">
+                                        {items.reduce((acc, curr) => acc + (parseInt(curr.quantity) || 0), 0)} <span className="text-[10px] text-primary-light uppercase ml-1">Verified Units</span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="h-10 w-px bg-white/10" />
+                            <div className="text-right">
+                                <span className="block text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Manifest Capacity</span>
+                                <span className="text-xs font-black text-white uppercase italic tracking-widest">{items.length} Distinct Line Items</span>
                             </div>
                         </div>
                     </div>
