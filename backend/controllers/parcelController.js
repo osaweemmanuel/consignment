@@ -282,11 +282,13 @@ const getParcelDetail = async (req, res) => {
     const [images] = await db.execute("SELECT imageUrl FROM parcel_images WHERE parcel_id = ?", [result.id]);
     result.images = images.map(img => img.imageUrl);
 
-    // 🗓️ Format dates for Frontend compatibility (e.g. from ISO to YYYY-MM-DD)
-    const formatDate = (dateStr) => {
-        if (!dateStr) return '';
+    // 🗓️ Format dates for Frontend compatibility (e.g. from ISO/Date to YYYY-MM-DD)
+    const formatDate = (dateValue) => {
+        if (!dateValue || dateValue === '0000-00-00') return '';
         try {
-            return new Date(dateStr).toISOString().split('T')[0];
+            const d = new Date(dateValue);
+            if (isNaN(d.getTime())) return '';
+            return d.toISOString().split('T')[0];
         } catch (e) {
             return '';
         }
@@ -328,7 +330,8 @@ const updateParcelLocation = async (req, res) => {
       dispatchDate,
       deliveryDate,
       keepImages,
-      quantity
+      quantity,
+      description
     } = req.body;
 
     const trackingNumberString = trackingNumber.toString().trim();
