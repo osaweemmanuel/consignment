@@ -282,9 +282,21 @@ const getParcelDetail = async (req, res) => {
     const [images] = await db.execute("SELECT imageUrl FROM parcel_images WHERE parcel_id = ?", [result.id]);
     result.images = images.map(img => img.imageUrl);
 
+    // 🗓️ Format dates for Frontend compatibility (e.g. from ISO to YYYY-MM-DD)
+    const formatDate = (dateStr) => {
+        if (!dateStr) return '';
+        try {
+            return new Date(dateStr).toISOString().split('T')[0];
+        } catch (e) {
+            return '';
+        }
+    };
+
+    result.dispatchDate = formatDate(result.dispatchDate);
+    result.deliveryDate = formatDate(result.deliveryDate);
+
     const [parcelHistory]=await db.execute("SELECT * FROM parcel_history WHERE trackingNumber=? ORDER BY updatedAt",[trackingNumber]);
-    console.log('history of parcel',parcelHistory);
-    res.status(200).json({ success: true, result,parcelHistory });
+    res.status(200).json({ success: true, result, parcelHistory });
   } catch (error) {
     res.status(500).json({ success: false, message: `Internal server error ${error.message}` });
   }
