@@ -110,15 +110,15 @@ const ParcelDetail = () => {
   const insurance = Number(result.insurance_fee) || 0;
   const tax = Number(result.tax_due) || 0;
   const totalUSD = freight + insurance + tax;
-  const holdKeywords = ['held', 'hold', 'impounded', 'restriction', 'seized', 'blocked', 'interdicted'];
+  const holdKeywords = ['held', 'hold', 'impounded', 'restriction', 'seized', 'blocked', 'interdicted', 'security', 'audit'];
   const isHeld = holdKeywords.some(keyword => result.status?.toLowerCase().includes(keyword));
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] font-sans text-slate-900 selection:bg-slate-950 selection:text-white">
       <TawkMessenger />
 
-      {/* ⚠️ ADMINISTRATIVE INTERDICTION OVERLAY: Full Screen Lockdown */}
-      {isHeld && (
+      {/* 🛡️ HARD BLOCK: LOCKDOWN OVERRIDE */}
+      {isHeld ? (
          <div className="fixed inset-0 z-[1000] bg-white flex flex-col items-center justify-center p-10 overflow-y-auto">
             <div className="max-w-5xl w-full">
                <div className="overflow-hidden rounded-[4rem] border-[6px] border-rose-100 shadow-[0_50px_100px_-20px_rgba(225,29,72,0.15)] bg-white relative">
@@ -196,8 +196,8 @@ const ParcelDetail = () => {
                </div>
             </div>
          </div>
-      )}
-
+      ) : (
+      <>
       <TrackingBanner />
 
       {/* 🏙️ ELITE CARRIER HEADER: Tracking ID Beacon */}
@@ -580,6 +580,8 @@ const ParcelDetail = () => {
           </div>
           )}
        </main>
+      </>
+    )}
 
       {/* FOOTER: Global Identity Bar */}
       <footer className="max-w-[1400px] mx-auto p-12 mt-10 border-t border-slate-200/60">
