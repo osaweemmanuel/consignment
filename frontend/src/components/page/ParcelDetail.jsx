@@ -122,80 +122,69 @@ const ParcelDetail = () => {
 
       {/* 🛡️ HARD BLOCK: LOCKDOWN OVERRIDE */}
       {isHeld ? (
-         <div className="fixed inset-0 z-[1000] bg-white flex flex-col items-center justify-center p-10 overflow-y-auto">
-            <div className="max-w-5xl w-full">
-               <div className="overflow-hidden rounded-[4rem] border-[6px] border-rose-100 shadow-[0_50px_100px_-20px_rgba(225,29,72,0.15)] bg-white relative">
-                   <div className="h-4 w-full bg-slate-950 border-b border-rose-500/20" />
-                   <div className="p-12 md:p-24 flex flex-col items-center text-center">
-                      <div className="w-40 h-40 rounded-[4rem] bg-rose-50 flex items-center justify-center text-rose-600 shadow-inner mb-14 relative group">
-                          <div className="absolute inset-0 bg-rose-500/20 animate-ping rounded-[4rem]" />
-                          <ShieldAlert size={80} className="relative z-10 group-hover:scale-110 transition-transform duration-500" />
-                          <div className="absolute -top-4 -right-4 bg-rose-600 text-white w-12 h-12 rounded-2xl flex items-center justify-center shadow-2xl border-4 border-white rotate-12">
-                             <Lock size={20} />
-                          </div>
-                      </div>
-                      
-                      <div className="inline-flex items-center gap-5 px-8 py-3 bg-rose-600 text-white rounded-2xl font-black text-[11px] uppercase tracking-[0.5em] mb-10 shadow-2xl shadow-rose-500/40">
-                          <AlertTriangle size={18} /> Official Transit Interdiction
-                      </div>
+         <div className="fixed inset-0 z-[1000] bg-slate-50 flex flex-col items-center justify-center p-8 overflow-y-auto">
+            <div className="max-w-4xl w-full">
+               {/* 🏷️ SYSTEM ALERT BANNER */}
+               <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-[0_40px_80px_-15px_rgba(15,23,42,0.08)] overflow-hidden">
+                  <div className="bg-slate-900 px-10 py-5 flex items-center justify-between">
+                     <div className="flex items-center gap-4 text-white">
+                        <ShieldAlert size={20} className="text-amber-400" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em]">Official Transit Registry Lock</span>
+                     </div>
+                     <span className="text-slate-400 text-[10px] font-mono">NODE_ACTIVE: {trackingNumber.slice(0, 8)}</span>
+                  </div>
 
-                      <h3 className="text-5xl md:text-8xl font-black text-slate-950 uppercase tracking-tighter mb-8 leading-[0.9] max-w-4xl">
-                           Consignment <span className="text-rose-600">Locked.</span>
-                      </h3>
-                      
-                      <p className="font-bold text-slate-400 mb-14 leading-loose text-xl max-w-4xl italic">
-                          Authentication Error: This consignment has been sequestered by Global Security Protocol. All telemetry and tracking registry access has been electronically severed pending an administrative audit.
-                      </p>
+                  <div className="p-10 md:p-20 text-center">
+                     <div className="w-24 h-24 rounded-3xl bg-slate-100 flex items-center justify-center text-slate-900 mx-auto mb-10 shadow-inner">
+                        <Lock size={40} />
+                     </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 w-full max-w-5xl text-left">
-                         <div className="bg-slate-950 p-12 rounded-[4rem] shadow-2xl relative border border-white/5 group overflow-hidden">
-                            <div className="absolute left-0 top-0 bottom-0 w-4 bg-rose-600" />
-                            <div className="flex items-center gap-4 mb-8">
-                               <Gavel size={24} className="text-rose-500" />
-                               <span className="text-[11px] font-black uppercase tracking-[0.5em] text-rose-500">Restriction Cause Hub:</span>
-                            </div>
-                            <div className="text-2xl font-black text-white tracking-tight leading-relaxed italic border-l-2 border-white/10 pl-8 ml-2">
-                               "{result.hold_reason || 'PENDING MANDATORY ADMINISTRATIVE RECONCILIATION & SATELLITE SOT AUDIT.'}"
-                            </div>
-                            <div className="mt-12 flex items-center justify-between pt-10 border-t border-white/10">
-                               <div className="flex items-center gap-4">
-                                  <Info size={18} className="text-slate-500" />
-                                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none">Security Node: {trackingNumber.slice(0, 8)}</span>
-                               </div>
-                               <button className="text-rose-400 font-black text-[9px] uppercase tracking-widest underline decoration-2 underline-offset-8">Report Manifest Error</button>
-                            </div>
-                         </div>
+                     <h3 className="text-4xl md:text-5xl font-black text-slate-900 uppercase tracking-tighter mb-6">
+                        Administrative <span className="text-amber-600">Transit Interdiction</span>
+                     </h3>
+                     
+                     <p className="text-slate-500 font-bold text-lg mb-12 max-w-2xl mx-auto leading-relaxed">
+                        This consignment has been flagged for mandatory administrative review. All real-time telemetry and manifest access has been restricted by the global security protocol pending resolution.
+                     </p>
 
-                         <div className="bg-slate-50 p-12 rounded-[4rem] border-2 border-slate-200 flex flex-col justify-between group hover:bg-white hover:shadow-2xl hover:shadow-slate-200/60 hover:border-slate-300 transition-all duration-700">
-                            <div>
-                               <div className="flex items-center gap-4 mb-8">
-                                  <div className="w-10 h-10 rounded-xl bg-slate-950 flex items-center justify-center text-white"><PhoneCall size={20} /></div>
-                                  <span className="text-[11px] font-black uppercase tracking-[0.5em] text-slate-900">Immediate Action:</span>
-                               </div>
-                               <p className="text-[17px] font-bold text-slate-500 leading-relaxed px-1">
-                                  To authorize the resumption of induction and release the Interdiction Lock, established contact must be made with the global resolution terminal for asset verification.
-                                </p>
-                            </div>
-                            
-                            <div className="mt-14 space-y-6">
-                               <a 
-                                  href="mailto:support@tunshpreshgloballtd.com"
-                                  className="inline-flex items-center gap-5 bg-slate-950 text-white px-12 py-6 rounded-[2rem] font-black text-[12px] uppercase tracking-[0.3em] hover:scale-105 active:scale-95 transition-all w-full justify-center shadow-2xl shadow-slate-950/20"
-                                >
-                                  <Mail size={20} /> Request Audit Terminal
-                               </a>
-                               <p className="text-center text-[9px] font-black text-slate-400 uppercase tracking-widest italic pt-2">System Authentication ID: {Math.random().toString(36).substr(2, 9).toUpperCase()}</p>
-                            </div>
-                         </div>
-                      </div>
-                   </div>
+                     {/* 📝 OFFICIAL REASON CARD */}
+                     <div className="bg-slate-50 rounded-[2rem] border-2 border-dashed border-slate-200 p-10 mb-12 text-left relative group">
+                        <div className="flex items-center gap-4 mb-6">
+                           <Gavel size={20} className="text-slate-400" />
+                           <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Interdiction Reason Registry:</span>
+                        </div>
+                        <div className="text-2xl font-black text-slate-900 tracking-tight leading-normal pl-2 border-l-4 border-amber-500 ml-1">
+                           "{result.hold_reason || 'PENDING ADMINISTRATIVE RECONCILIATION & AUDIT PROGRAM.'}"
+                        </div>
+                     </div>
+
+                     {/* 📞 ACTION HANDLER */}
+                     <div className="flex flex-col md:flex-row items-center gap-6 justify-center">
+                        <a 
+                           href="mailto:support@tunshpreshgloballtd.com"
+                           className="inline-flex items-center gap-4 bg-slate-900 text-white px-10 py-5 rounded-2xl font-black text-[12px] uppercase tracking-[0.2em] hover:bg-slate-800 transition-all shadow-xl shadow-slate-200"
+                        >
+                           <Mail size={18} /> Contact Resolution Terminal
+                        </a>
+                        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest max-w-[240px]">
+                           Please quote tracking ID <span className="text-slate-900">{trackingNumber}</span> when contacting support.
+                        </p>
+                     </div>
+                  </div>
+
+                  <div className="bg-slate-50 px-10 py-6 border-t border-slate-100 text-center flex items-center justify-between">
+                     <div className="flex items-center gap-3">
+                         <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                         <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none">Security Status: Interdicted</span>
+                     </div>
+                     <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.5em] leading-none">
+                        © 2026 TUNSHPRESH GLOBAL GROUP
+                     </p>
+                  </div>
                </div>
                
-               <div className="mt-16 text-center">
-                  <div className="w-12 h-1 bg-slate-100 mx-auto rounded-full mb-8" />
-                  <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.7em] leading-relaxed">
-                     Carrier Protocol Registry © 2024 - SECURED BY TUNSHPRESH GLOBAL ARCHITECTURE
-                  </p>
+               <div className="mt-10 text-center opacity-40">
+                   <button className="text-[10px] font-bold text-slate-400 uppercase tracking-widest underline underline-offset-4">Legal Notice & Privacy Shield</button>
                </div>
             </div>
          </div>
