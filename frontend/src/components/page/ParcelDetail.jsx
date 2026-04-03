@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { 
   Package, 
   Truck, 
@@ -160,12 +160,12 @@ const ParcelDetail = () => {
 
                      {/* 📞 ACTION HANDLER */}
                      <div className="flex flex-col md:flex-row items-center gap-6 justify-center">
-                        <a 
-                           href="mailto:support@tunshpreshgloballtd.com"
+                        <Link 
+                           to="/contact"
                            className="inline-flex items-center gap-4 bg-slate-900 text-white px-10 py-5 rounded-2xl font-black text-[12px] uppercase tracking-[0.2em] hover:bg-slate-800 transition-all shadow-xl shadow-slate-200"
                         >
                            <Mail size={18} /> Contact Resolution Terminal
-                        </a>
+                        </Link>
                         <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest max-w-[240px]">
                            Please quote tracking ID <span className="text-slate-900">{trackingNumber}</span> when contacting support.
                         </p>
