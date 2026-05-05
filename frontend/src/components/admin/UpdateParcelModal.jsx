@@ -49,7 +49,7 @@ const UpdateParcelForm = () => {
     status: '',
     dispatchDate: '',
     deliveryDate: '',
-    updatedAt: new Date().toISOString().split('T')[0],
+    updatedAt: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16),
     freight_charge: 0,
     insurance_fee: 0,
     tax_due: 0,
@@ -124,7 +124,7 @@ const UpdateParcelForm = () => {
         status: res.status || '',
         dispatchDate: res.dispatchDate || '',
         deliveryDate: res.deliveryDate || '',
-        updatedAt: res.updatedAt ? new Date(res.updatedAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+        updatedAt: res.updatedAt ? new Date(new Date(res.updatedAt).getTime() - new Date(res.updatedAt).getTimezoneOffset() * 60000).toISOString().slice(0, 16) : new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16),
         freight_charge: res.freight_charge || 0,
         insurance_fee: res.insurance_fee || 0,
         tax_due: res.tax_due || 0,
@@ -441,6 +441,20 @@ const UpdateParcelForm = () => {
                                         <option value="insurance_held">⚠ INSURANCE HEADER HELD</option>
                                         <option value="security_audit">⚠ SECURITY AUDIT RESTRICTION</option>
                                     </select>
+                                </div>
+                            </div>
+
+                            <div className="space-y-1">
+                                <label className={labelClass}>Status Event Date & Time</label>
+                                <div className="relative flex items-center">
+                                    <Clock className="absolute left-4 text-slate-300" size={18} />
+                                    <input 
+                                        type="datetime-local"
+                                        name="updatedAt" 
+                                        value={parcelData.updatedAt} 
+                                        onChange={handleChange} 
+                                        className={inputClass}
+                                    />
                                 </div>
                             </div>
 

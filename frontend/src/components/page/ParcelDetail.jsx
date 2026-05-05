@@ -343,7 +343,7 @@ const ParcelDetail = () => {
 
                {/* ⏱️ TRANSPORT JOURNEY HUB */}
                <section className="bg-white rounded-[3rem] p-12 shadow-2xl shadow-slate-200/60 border border-slate-100">
-                  <div className="flex items-center justify-between mb-12 border-b border-slate-50 pb-8">
+                  <div className="flex items-center justify-between mb-8 border-b border-slate-50 pb-8">
                      <div>
                         <h3 className="text-2xl font-black text-slate-950 tracking-tighter uppercase leading-none mb-1">Transit Narrative</h3>
                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Complete Temporal History Manifest</span>
@@ -351,10 +351,14 @@ const ParcelDetail = () => {
                      <History size={24} className="text-slate-100" />
                   </div>
                   
+                  <div className="mb-12 border-b border-slate-50 pb-12">
+                     <AdjustableProgressBar progressStatus={result.progressStatus || 0} />
+                  </div>
+
                   <div className="space-y-0 relative">
                      <div className="absolute left-[31px] top-6 bottom-6 w-0.5 bg-slate-50" />
                      {parcelHistory && parcelHistory.length > 0 ? (
-                        parcelHistory.map((history, index) => (
+                        [...parcelHistory].reverse().map((history, index) => (
                            <motion.div 
                              initial={{ opacity: 0, x: -20 }}
                              whileInView={{ opacity: 1, x: 0 }}
@@ -364,9 +368,9 @@ const ParcelDetail = () => {
                              className="relative flex items-start gap-12 pb-14 last:pb-0 group"
                            >
                               <div className={`w-16 h-16 rounded-2xl flex items-center justify-center relative z-10 transition-all duration-500 border-8 border-white shadow-xl ${
-                                 index === parcelHistory.length - 1 ? 'bg-slate-950 text-primary-light scale-110 shadow-slate-950/20' : 'bg-slate-100 text-slate-400'
+                                 index === 0 ? 'bg-slate-950 text-primary-light scale-110 shadow-slate-950/20' : 'bg-slate-100 text-slate-400'
                               }`}>
-                                 {index === parcelHistory.length - 1 ? <Activity size={24} className="animate-pulse" /> : <div className="w-2.5 h-2.5 rounded-full bg-slate-300" />}
+                                 {index === 0 ? <Activity size={24} className="animate-pulse" /> : <div className="w-2.5 h-2.5 rounded-full bg-slate-300" />}
                               </div>
                               <div className="pt-2">
                                  <div className="flex items-center gap-4 mb-2">

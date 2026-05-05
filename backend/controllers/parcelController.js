@@ -349,7 +349,8 @@ const updateParcelLocation = async (req, res) => {
       deliveryDate,
       keepImages,
       quantity,
-      description
+      description,
+      updatedAt
     } = req.body;
 
     const trackingNumberString = trackingNumber.toString().trim();
@@ -363,7 +364,7 @@ const updateParcelLocation = async (req, res) => {
       return res.status(404).json({ message: 'No parcel record found' });
     }
     const updatedParcel = parcelResults[0];
-    const date = new Date();
+    const date = updatedAt ? new Date(updatedAt) : new Date();
 
     // 📍 COORD RECTIFICATION: Convert empty strings to null or fallback
     const dLat = destinationLatitude && destinationLatitude !== '' ? destinationLatitude : (updatedParcel.destinationLatitude || 0);
