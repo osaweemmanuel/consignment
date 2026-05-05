@@ -352,7 +352,21 @@ const ParcelDetail = () => {
                   </div>
                   
                   <div className="mb-12 border-b border-slate-50 pb-12">
-                     <AdjustableProgressBar progressStatus={result.progressStatus || 0} />
+                     <div className="p-8 bg-slate-50 border border-slate-200 rounded-2xl space-y-8">
+                         <div className="flex justify-between items-center">
+                             <span className="text-[11px] font-black text-slate-500 uppercase tracking-widest">Operational Load Index</span>
+                             <span className="text-3xl font-black text-primary-main">{result.progressStatus || 0}%</span>
+                         </div>
+                         <div className="relative w-full h-2 bg-slate-200 rounded-full">
+                             <div className="absolute top-0 left-0 h-full bg-primary-main rounded-full transition-all duration-1000" style={{ width: `${result.progressStatus || 0}%` }} />
+                             <div className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-primary-main rounded-full shadow border-2 border-white transition-all duration-1000" style={{ left: `calc(${result.progressStatus || 0}% - 8px)` }} />
+                         </div>
+                         <div className="flex justify-between text-[9px] font-black text-slate-400 uppercase tracking-widest opacity-50">
+                             <span>Origin Terminal</span>
+                             <span>Mid-Point Transit</span>
+                             <span>Final Resolution</span>
+                         </div>
+                     </div>
                   </div>
 
                   <div className="space-y-0 relative">
