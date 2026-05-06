@@ -43,15 +43,9 @@ const ParcelDetail = () => {
   };
 
   if (isLoading) return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-white">
-      <div className="relative mb-8 flex justify-center items-center">
-        <div className="absolute w-24 h-24 rounded-full border-4 border-primary-main/20 border-t-primary-main animate-spin" />
-        <div className="w-12 h-12 bg-primary-main/10 rounded-full flex items-center justify-center animate-pulse">
-          <Globe className="w-6 h-6 text-primary-main animate-spin-slow" />
-        </div>
-      </div>
-      <p className="text-[12px] font-black uppercase tracking-[0.3em] text-slate-800 animate-pulse">Authenticating Parcel Data...</p>
-      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-2">Establishing Secure Connection</p>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-[#F8FAFC]">
+      <div className="w-10 h-10 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin mb-6" />
+      <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Retrieving Consignment Data...</p>
     </div>
   );
 

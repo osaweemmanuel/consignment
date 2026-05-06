@@ -2,12 +2,12 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary-main: #2563EB; /* Modern Blue */
-  --color-primary-dark: #1E40AF;
-  --color-primary-light: #60A5FA;
+  --color-primary-main: #4D148C; /* FedEx Purple */
+  --color-primary-dark: #330b61;
+  --color-primary-light: #6b28b7;
   
-  --color-accent-main: #F59E0B;  /* Amber / Gold */
-  --color-accent-hover: #D97706;
+  --color-accent-main: #FF6600;  /* FedEx Orange */
+  --color-accent-hover: #e65c00;
   
   --font-sans: "Inter", sans-serif;
   
