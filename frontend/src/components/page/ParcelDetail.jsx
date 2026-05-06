@@ -76,7 +76,7 @@ const ParcelDetail = () => {
 
       {isHeld ? (
          <div className="fixed inset-0 z-[1000] bg-white flex flex-col items-center justify-center p-6 overflow-y-auto">
-            <div className="max-w-3xl w-full bg-slate-50 rounded-[2rem] border border-slate-200 overflow-hidden shadow-2xl">
+            <div className="max-w-3xl w-full bg-slate-50 rounded-md border border-slate-200 overflow-hidden shadow-2xl">
                 <div className="bg-rose-600 p-6 flex justify-between items-center text-white">
                     <div className="flex items-center gap-3">
                         <ShieldAlert size={24} />
@@ -91,12 +91,12 @@ const ParcelDetail = () => {
                     <h3 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight mb-4">Transit Suspended</h3>
                     <p className="text-slate-600 text-lg mb-10 leading-relaxed">This consignment has been flagged for administrative review. Tracking telemetry has been locked pending resolution.</p>
                     
-                    <div className="bg-white border-l-4 border-amber-500 p-6 text-left rounded-r-xl shadow-sm mb-10">
+                    <div className="bg-white border-l-4 border-amber-500 p-6 text-left shadow-sm mb-10">
                         <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Reason for Hold</p>
                         <p className="text-lg font-bold text-slate-800">{result.hold_reason || "Pending Administrative Reconciliation"}</p>
                     </div>
 
-                    <Link to="/contact" className="inline-flex items-center gap-3 bg-slate-900 text-white px-8 py-4 rounded-xl font-bold hover:bg-slate-800 transition-all">
+                    <Link to="/contact" className="inline-flex items-center gap-3 bg-slate-900 text-white px-8 py-4 rounded-sm font-bold hover:bg-slate-800 transition-all">
                         Contact Support for Resolution <ArrowRight size={18} />
                     </Link>
                 </div>
@@ -105,21 +105,24 @@ const ParcelDetail = () => {
       ) : (
       <>
       {/* HEADER SECTION */}
-      <header className="bg-white border-b border-slate-200 pt-8 pb-8 px-6 lg:px-12">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <header className="bg-slate-900 text-white pt-12 pb-12 px-6 lg:px-12 shadow-xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-8 text-white/5 pointer-events-none">
+            <Globe size={300} className="animate-spin-slow" />
+        </div>
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-6 relative z-10">
             <div>
-                <p className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-2">
-                    <Package size={16} /> Consignment Tracking
+                <p className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <Package size={16} /> Official Tracking Telemetry
                 </p>
-                <div className="flex items-center gap-4">
-                    <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter">{trackingNumber}</h1>
-                    <span className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest ${result.status?.toLowerCase() === 'delivered' ? 'bg-emerald-100 text-emerald-700' : 'bg-primary-main/10 text-primary-main'}`}>
+                <div className="flex items-center gap-6">
+                    <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter">{trackingNumber}</h1>
+                    <span className={`px-4 py-1.5 text-xs font-black uppercase tracking-widest border ${result.status?.toLowerCase() === 'delivered' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50' : 'bg-primary-main/20 text-primary-light border-primary-main/50'}`}>
                         {result.status || 'In Transit'}
                     </span>
                 </div>
             </div>
             <div className="flex items-center gap-4">
-                <button onClick={handleDownloadPDF} className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-6 py-3 rounded-xl font-bold transition-all text-sm">
+                <button onClick={handleDownloadPDF} className="flex items-center gap-2 bg-primary-main hover:bg-white hover:text-primary-main text-white px-6 py-3 rounded-sm font-bold transition-all text-sm shadow-lg">
                     <Download size={18} /> Download Waybill
                 </button>
             </div>
@@ -136,17 +139,17 @@ const ParcelDetail = () => {
         </div>
 
         {/* PROGRESS BAR (Operational Load Index) */}
-        <div className="bg-white p-8 md:p-10 rounded-3xl border border-slate-200 shadow-sm mb-10">
+        <div className="bg-white p-8 md:p-10 border-t-4 border-t-primary-main shadow-lg mb-10">
             <div className="flex justify-between items-end mb-6">
                 <div>
-                    <h3 className="text-xl font-black text-slate-900 tracking-tight">Transit Progress</h3>
+                    <h3 className="text-xl font-black text-slate-900 tracking-tight uppercase">Transit Progress</h3>
                     <p className="text-xs text-slate-500 uppercase tracking-widest font-bold mt-1">Operational Load Index</p>
                 </div>
                 <span className="text-4xl font-black text-primary-main">{result.progressStatus || 0}%</span>
             </div>
-            <div className="relative w-full h-3 bg-slate-100 rounded-full mb-4">
-                <div className="absolute top-0 left-0 h-full bg-primary-main rounded-full transition-all duration-1000 shadow-[0_0_15px_rgba(37,99,235,0.4)]" style={{ width: `${result.progressStatus || 0}%` }} />
-                <div className="absolute top-1/2 -translate-y-1/2 w-6 h-6 bg-white rounded-full shadow-lg border-4 border-primary-main transition-all duration-1000" style={{ left: `calc(${result.progressStatus || 0}% - 12px)` }} />
+            <div className="relative w-full h-3 bg-slate-100 rounded-none mb-4">
+                <div className="absolute top-0 left-0 h-full bg-primary-main transition-all duration-1000 shadow-[0_0_15px_rgba(37,99,235,0.4)]" style={{ width: `${result.progressStatus || 0}%` }} />
+                <div className="absolute top-1/2 -translate-y-1/2 w-6 h-6 bg-white shadow-lg border-4 border-primary-main transition-all duration-1000" style={{ left: `calc(${result.progressStatus || 0}% - 12px)` }} />
             </div>
             <div className="flex justify-between text-[10px] font-black text-slate-400 uppercase tracking-widest">
                 <span>Origin</span>
@@ -161,17 +164,17 @@ const ParcelDetail = () => {
             <div className="xl:col-span-2 space-y-10">
                 
                 {/* MAP */}
-                <div className="bg-white rounded-3xl p-3 border border-slate-200 shadow-sm relative overflow-hidden">
-                    <div className="absolute top-6 left-6 z-10 bg-white/90 backdrop-blur-md px-4 py-3 rounded-xl shadow-lg border border-slate-100 flex items-center gap-3">
-                        <div className="w-8 h-8 bg-primary-main/10 text-primary-main rounded-full flex items-center justify-center">
+                <div className="bg-white p-2 border border-slate-200 shadow-md relative overflow-hidden">
+                    <div className="absolute top-6 left-6 z-10 bg-slate-900/90 backdrop-blur-md px-4 py-3 shadow-lg border border-slate-700 flex items-center gap-3">
+                        <div className="w-8 h-8 bg-primary-main/20 text-primary-light rounded-sm flex items-center justify-center">
                             <Navigation size={16} />
                         </div>
                         <div>
                             <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Current Location</p>
-                            <p className="text-sm font-bold text-slate-900">{result.currentLocation || "Updating..."}</p>
+                            <p className="text-sm font-bold text-white">{result.currentLocation || "Updating..."}</p>
                         </div>
                     </div>
-                    <div className="h-[400px] rounded-2xl overflow-hidden bg-slate-100">
+                    <div className="h-[400px] bg-slate-100">
                         <MapComponent 
                             originLat={result.originLatitude} originLng={result.originLongitude}
                             currentLat={result.currentLatitude} currentLng={result.currentLongitude}
@@ -182,15 +185,18 @@ const ParcelDetail = () => {
                 </div>
 
                 {/* TIMELINE */}
-                <div className="bg-white rounded-3xl p-8 md:p-12 border border-slate-200 shadow-sm">
-                    <div className="flex items-center gap-3 mb-10">
-                        <History className="text-primary-main" size={24} />
-                        <h3 className="text-2xl font-black text-slate-900 tracking-tight">Tracking History</h3>
+                <div className="bg-white p-8 md:p-12 border-t-4 border-t-slate-800 shadow-lg">
+                    <div className="flex items-center gap-4 mb-10 pb-6 border-b border-slate-100">
+                        <History className="text-primary-main" size={28} />
+                        <div>
+                            <h3 className="text-2xl font-black text-slate-900 tracking-tight uppercase">Tracking History</h3>
+                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Real-Time Telemetry Logs</p>
+                        </div>
                     </div>
                     
                     <div className="relative pl-4 md:pl-8">
-                        {/* Continuous Line */}
-                        <div className="absolute left-[27px] md:left-[43px] top-4 bottom-4 w-0.5 bg-slate-100" />
+                        {/* Vertical line connecting nodes */}
+                        <div className="absolute top-4 bottom-10 left-[27px] md:left-[43px] w-0.5 bg-slate-200" />
                         
                         {parcelHistory && parcelHistory.length > 0 ? (
                             parcelHistory.map((history, index) => {
@@ -199,8 +205,8 @@ const ParcelDetail = () => {
                                 return (
                                 <div key={index} className="relative flex items-start gap-6 md:gap-8 mb-12 last:mb-0 group">
                                     {/* Timeline Node */}
-                                    <div className={`relative z-10 w-8 h-8 rounded-full flex items-center justify-center border-4 border-white shadow-sm transition-all ${isLatest ? 'bg-primary-main scale-125 shadow-primary-main/30' : 'bg-slate-300'}`}>
-                                        {isLatest && <div className="absolute inset-0 rounded-full border border-primary-main animate-ping opacity-50" />}
+                                    <div className={`relative z-10 w-8 h-8 flex items-center justify-center border-4 border-white shadow-sm transition-all ${isLatest ? 'bg-primary-main scale-125 shadow-primary-main/30 rounded-none' : 'bg-slate-300 rounded-full'}`}>
+                                        {isLatest && <div className="absolute inset-0 border border-primary-main animate-ping opacity-50" />}
                                     </div>
                                     
                                     {/* Content */}
@@ -220,27 +226,31 @@ const ParcelDetail = () => {
                                 </div>
                             )})
                         ) : (
-                            <div className="text-center py-12">
-                                <p className="text-slate-400 font-bold">No tracking history available yet.</p>
-                            </div>
+                            <p className="text-sm font-bold text-slate-400 py-10 text-center uppercase tracking-widest border border-dashed border-slate-200 rounded-none bg-slate-50">No Tracking Events Logged</p>
                         )}
                     </div>
                 </div>
 
                 {/* CARGO ASSETS */}
                 {((result.images && result.images.length > 0) || result.imageUrl) && (
-                    <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm">
-                        <h3 className="text-xl font-black text-slate-900 tracking-tight mb-8">Cargo Assets</h3>
+                    <div className="bg-white p-8 md:p-12 border-t-4 border-t-slate-800 shadow-lg">
+                        <div className="flex items-center gap-4 mb-8">
+                            <Package className="text-primary-main" size={28} />
+                            <div>
+                                <h3 className="text-2xl font-black text-slate-900 tracking-tight uppercase">Cargo Assets</h3>
+                                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Verified Logistics Scans</p>
+                            </div>
+                        </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             {(result.images && result.images.length > 0 ? result.images : [{ url: result.imageUrl, description: result.description, quantity: result.quantity }]).map((item, i) => (
-                                <div key={i} className="group rounded-2xl overflow-hidden border border-slate-100 bg-slate-50 relative cursor-pointer" onClick={() => setSelectedImage(item)}>
+                                <div key={i} className="group border border-slate-200 bg-slate-50 relative cursor-pointer hover:shadow-xl transition-all" onClick={() => setSelectedImage(item)}>
                                     <div className="aspect-video overflow-hidden">
                                         <img src={item.url} alt={`Asset ${i+1}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                     </div>
-                                    <div className="p-4">
+                                    <div className="p-4 border-t border-slate-200 bg-white">
                                         <div className="flex justify-between items-center mb-2">
                                             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Asset {i+1}</span>
-                                            <span className="bg-slate-200 text-slate-700 text-[10px] font-bold px-2 py-1 rounded">{item.quantity || 1} Units</span>
+                                            <span className="bg-slate-100 text-slate-700 text-[10px] font-bold px-2 py-1">{item.quantity || 1} Units</span>
                                         </div>
                                         <p className="text-sm font-bold text-slate-800 line-clamp-2">{item.description || "Verified package asset."}</p>
                                     </div>
@@ -255,18 +265,18 @@ const ParcelDetail = () => {
             <div className="space-y-6">
                 
                 {/* Route Details */}
-                <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm">
+                <div className="bg-white p-8 border-t-4 border-t-slate-800 shadow-lg">
                     <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6">Route Details</h4>
                     <div className="space-y-6">
                         <div className="flex gap-4">
-                            <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-500 shrink-0"><MapPin size={18} /></div>
+                            <div className="w-10 h-10 bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-500 shrink-0"><MapPin size={18} /></div>
                             <div>
                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Origin</p>
                                 <p className="text-sm font-bold text-slate-900">{result.origin}</p>
                             </div>
                         </div>
                         <div className="flex gap-4">
-                            <div className="w-10 h-10 rounded-full bg-primary-main/10 flex items-center justify-center text-primary-main shrink-0"><MapPin size={18} /></div>
+                            <div className="w-10 h-10 bg-primary-main/10 border border-primary-main/20 flex items-center justify-center text-primary-main shrink-0"><MapPin size={18} /></div>
                             <div>
                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Destination</p>
                                 <p className="text-sm font-bold text-slate-900">{result.destination}</p>
@@ -276,7 +286,7 @@ const ParcelDetail = () => {
                 </div>
 
                 {/* Shipment Info */}
-                <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm">
+                <div className="bg-white p-8 border-t-4 border-t-slate-800 shadow-lg">
                     <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6">Shipment Info</h4>
                     <div className="space-y-5">
                         <InfoRow label="Parcel Item" value={result.description} />
@@ -299,7 +309,7 @@ const ParcelDetail = () => {
                 </div>
 
                 {/* Financial Summary */}
-                <div className="bg-slate-900 rounded-3xl p-8 shadow-xl text-white">
+                <div className="bg-slate-900 p-8 border-t-4 border-t-primary-main shadow-xl text-white">
                     <div className="flex items-center gap-3 mb-6">
                         <CreditCard className="text-slate-400" size={20} />
                         <h4 className="text-xs font-black uppercase tracking-widest">Financial Summary</h4>
@@ -313,23 +323,23 @@ const ParcelDetail = () => {
                         <span className="text-xs font-black text-slate-400 uppercase tracking-widest">Total</span>
                         <span className="text-2xl font-black">{formatCurrency(totalUSD)}</span>
                     </div>
-                    <div className={`text-center py-2 rounded-lg text-xs font-bold uppercase tracking-widest ${result.payment_status?.toLowerCase() === 'paid' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}`}>
+                    <div className={`text-center py-3 border text-xs font-bold uppercase tracking-widest ${result.payment_status?.toLowerCase() === 'paid' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50' : 'bg-rose-500/20 text-rose-400 border-rose-500/50'}`}>
                         Status: {result.payment_status}
                     </div>
                 </div>
 
                 {/* Documents */}
-                <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-3">
-                    <button onClick={() => setShowWaybill(true)} className="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-primary-main/5 rounded-xl transition-colors group border border-slate-100">
-                        <div className="flex items-center gap-3"><FileText size={18} className="text-slate-400 group-hover:text-primary-main" /><span className="text-sm font-bold text-slate-700">Carrier Waybill</span></div>
+                <div className="bg-white p-6 border-t-4 border-t-slate-800 shadow-lg space-y-3">
+                    <button onClick={() => setShowWaybill(true)} className="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 transition-colors group border border-slate-200">
+                        <div className="flex items-center gap-3"><FileText size={18} className="text-slate-400 group-hover:text-primary-main" /><span className="text-sm font-bold text-slate-700 uppercase tracking-widest">Waybill</span></div>
                         <ChevronRight size={16} className="text-slate-300" />
                     </button>
-                    <button onClick={() => setShowClearance(true)} className="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-primary-main/5 rounded-xl transition-colors group border border-slate-100">
-                        <div className="flex items-center gap-3"><ShieldCheck size={18} className="text-slate-400 group-hover:text-primary-main" /><span className="text-sm font-bold text-slate-700">Clearance Cert</span></div>
+                    <button onClick={() => setShowClearance(true)} className="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 transition-colors group border border-slate-200">
+                        <div className="flex items-center gap-3"><ShieldCheck size={18} className="text-slate-400 group-hover:text-primary-main" /><span className="text-sm font-bold text-slate-700 uppercase tracking-widest">Clearance</span></div>
                         <ChevronRight size={16} className="text-slate-300" />
                     </button>
-                    <button onClick={() => setShowInvoice(true)} className="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-primary-main/5 rounded-xl transition-colors group border border-slate-100">
-                        <div className="flex items-center gap-3"><Terminal size={18} className="text-slate-400 group-hover:text-primary-main" /><span className="text-sm font-bold text-slate-700">Commercial Invoice</span></div>
+                    <button onClick={() => setShowInvoice(true)} className="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 transition-colors group border border-slate-200">
+                        <div className="flex items-center gap-3"><Terminal size={18} className="text-slate-400 group-hover:text-primary-main" /><span className="text-sm font-bold text-slate-700 uppercase tracking-widest">Invoice</span></div>
                         <ChevronRight size={16} className="text-slate-300" />
                     </button>
                 </div>
