@@ -83,12 +83,15 @@ const ParcelDetail = () => {
   };
 
   if (isLoading) return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-[#F8FAFC]">
-      <div className="relative mb-6">
-        <div className="w-16 h-16 rounded-2xl border-2 border-slate-900/5 animate-spin-slow" />
-        <Loader2 className="w-8 h-8 text-slate-950 animate-spin absolute inset-0 m-auto" />
+    <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50">
+      <div className="relative mb-8 flex justify-center items-center">
+        <div className="absolute w-24 h-24 rounded-full border-4 border-primary-main/20 border-t-primary-main animate-spin" />
+        <div className="w-12 h-12 bg-primary-main/10 rounded-full flex items-center justify-center animate-pulse">
+          <Globe className="w-6 h-6 text-primary-main animate-spin-slow" />
+        </div>
       </div>
-      <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 animate-pulse">Syncing Telemetry...</p>
+      <p className="text-[12px] font-black uppercase tracking-[0.3em] text-slate-800 animate-pulse">Authenticating Parcel Data...</p>
+      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-2">Establishing Secure Connection</p>
     </div>
   );
 
