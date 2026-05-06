@@ -279,6 +279,8 @@ const ParcelDetail = () => {
                 <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm">
                     <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6">Shipment Info</h4>
                     <div className="space-y-5">
+                        <InfoRow label="Parcel Item" value={result.description} />
+                        <InfoRow label="Quantity" value={`${result.quantity || 1} Units`} />
                         <InfoRow label="Consignor" value={result.senderName} />
                         <InfoRow label="Consignee" value={result.receiverName} />
                         <InfoRow label="Weight" value={`${result.weight} KG`} />
