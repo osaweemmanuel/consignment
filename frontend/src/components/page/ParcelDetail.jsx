@@ -63,8 +63,8 @@ const ParcelDetail = () => {
   );
 
   const result = data.result;
-  // Make sure history is sorted newest-first for the timeline
-  const parcelHistory = data.parcelHistory ? [...data.parcelHistory].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)) : [];
+  // Sort history by ID descending so the most recently inserted item is always at the top, regardless of date/time mistakes
+  const parcelHistory = data.parcelHistory ? [...data.parcelHistory].sort((a, b) => b.id - a.id) : [];
   
   const formatCurrency = (amount) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount || 0);
   const totalUSD = (Number(result.freight_charge) || 0) + (Number(result.insurance_fee) || 0) + (Number(result.tax_due) || 0);
