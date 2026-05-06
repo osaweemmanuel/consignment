@@ -215,7 +215,7 @@ const ParcelDetail = () => {
                                                 {dateObj.toLocaleDateString('en-US', { timeZone: 'UTC', month: 'short', day: 'numeric', year: 'numeric' })} at {dateObj.toLocaleTimeString('en-US', { timeZone: 'UTC', hour: '2-digit', minute: '2-digit' })}
                                             </span>
                                         </div>
-                                        <h4 className="text-lg md:text-xl font-bold text-slate-900 leading-snug">{history.currentLocation}</h4>
+                                        <h4 className="text-sm md:text-base font-bold text-slate-800 leading-relaxed max-w-3xl">{history.currentLocation}</h4>
                                     </div>
                                 </div>
                             )})
