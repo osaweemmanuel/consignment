@@ -281,8 +281,8 @@ const ParcelDetail = () => {
                     <div className="space-y-5">
                         <InfoRow label="Parcel Item" value={result.description} />
                         <InfoRow label="Quantity" value={`${result.quantity || 1} Units`} />
-                        <InfoRow label="Consignor" value={result.senderName} />
-                        <InfoRow label="Consignee" value={result.receiverName} />
+                        <InfoRow label="Sender" value={result.senderName} />
+                        <InfoRow label="Receiver" value={result.receiverName} />
                         <InfoRow label="Weight" value={`${result.weight} KG`} />
                         <InfoRow label="Service Type" value={result.service_type} />
                         <div className="pt-4 border-t border-slate-100">
