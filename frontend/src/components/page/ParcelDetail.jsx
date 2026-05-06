@@ -228,11 +228,11 @@ const ParcelDetail = () => {
                 </div>
 
                 {/* CARGO ASSETS */}
-                {result.images && result.images.length > 0 && (
+                {((result.images && result.images.length > 0) || result.imageUrl) && (
                     <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm">
                         <h3 className="text-xl font-black text-slate-900 tracking-tight mb-8">Cargo Assets</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            {result.images.map((item, i) => (
+                            {(result.images && result.images.length > 0 ? result.images : [{ url: result.imageUrl, description: result.description, quantity: result.quantity }]).map((item, i) => (
                                 <div key={i} className="group rounded-2xl overflow-hidden border border-slate-100 bg-slate-50 relative cursor-pointer" onClick={() => setSelectedImage(item)}>
                                     <div className="aspect-video overflow-hidden">
                                         <img src={item.url} alt={`Asset ${i+1}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -240,7 +240,7 @@ const ParcelDetail = () => {
                                     <div className="p-4">
                                         <div className="flex justify-between items-center mb-2">
                                             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Asset {i+1}</span>
-                                            <span className="bg-slate-200 text-slate-700 text-[10px] font-bold px-2 py-1 rounded">{item.quantity} Units</span>
+                                            <span className="bg-slate-200 text-slate-700 text-[10px] font-bold px-2 py-1 rounded">{item.quantity || 1} Units</span>
                                         </div>
                                         <p className="text-sm font-bold text-slate-800 line-clamp-2">{item.description || "Verified package asset."}</p>
                                     </div>
