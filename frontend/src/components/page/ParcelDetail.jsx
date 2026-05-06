@@ -285,14 +285,12 @@ const ParcelDetail = () => {
                     </div>
                 </div>
 
-                {/* Shipment Info */}
+                {/* Cargo Info */}
                 <div className="bg-white p-8 border-t-4 border-t-slate-800 shadow-lg">
-                    <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6">Shipment Info</h4>
+                    <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6">Cargo Specifications</h4>
                     <div className="space-y-5">
                         <InfoRow label="Parcel Item" value={result.description} />
                         <InfoRow label="Quantity" value={`${result.quantity || 1} Units`} />
-                        <InfoRow label="Sender" value={result.senderName} />
-                        <InfoRow label="Receiver" value={result.receiverName} />
                         <InfoRow label="Weight" value={`${result.weight} KG`} />
                         <InfoRow label="Service Type" value={result.service_type} />
                         <div className="pt-4 border-t border-slate-100">
@@ -305,6 +303,26 @@ const ParcelDetail = () => {
                                 <span className="text-xs font-bold text-slate-900">{result.deliveryDate || "Pending"}</span>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                {/* Sender Profile */}
+                <div className="bg-white p-8 border-t-4 border-t-slate-800 shadow-lg">
+                    <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6">Sender Details</h4>
+                    <div className="space-y-5">
+                        <InfoRow label="Name" value={result.senderName} />
+                        <InfoRow label="Phone" value={result.senderPhone} />
+                        <InfoRow label="Email" value={result.senderEmail} />
+                    </div>
+                </div>
+
+                {/* Receiver Profile */}
+                <div className="bg-white p-8 border-t-4 border-t-slate-800 shadow-lg">
+                    <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6">Receiver Details</h4>
+                    <div className="space-y-5">
+                        <InfoRow label="Name" value={result.receiverName} />
+                        <InfoRow label="Phone" value={result.receiverPhone} />
+                        <InfoRow label="Email" value={result.receiverEmail} />
                     </div>
                 </div>
 
